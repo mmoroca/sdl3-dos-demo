@@ -2,7 +2,7 @@
 
 [English](README.md) · [Español](README.es.md)
 
-**by @mmoroca & [Leo.AI](http://Leo.AI) 2026**
+**by @mmoroca & [Arena.AI](http://arena.ai) 2026**
 
 A set of small C programs for MS-DOS, built with DJGPP and the SDL3 DOS backend. The project source is separate from SDL3: the SDL checkout is fetched from upstream when building and is not included in this repository.
 
