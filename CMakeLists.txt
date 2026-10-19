@@ -1,0 +1,37 @@
+cmake_minimum_required(VERSION 3.16)
+# by @mmoroca & Leo.AI 2026 (http://Leo.AI)
+project(sdl3_dos_demo LANGUAGES C)
+
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
+# DOS executables are statically linked; DOS has no SDL shared-library loader.
+set(SDL_SHARED OFF CACHE BOOL "Build SDL shared library" FORCE)
+set(SDL_STATIC ON CACHE BOOL "Build SDL static library" FORCE)
+set(SDL_AUDIO ON CACHE BOOL "Build SDL audio support" FORCE)
+set(SDL_TESTS OFF CACHE BOOL "Build SDL tests" FORCE)
+set(SDL_EXAMPLES OFF CACHE BOOL "Build SDL examples" FORCE)
+
+# SDL3 is an external dependency; its source tree must include the DOS port.
+set(SDL3_DOS_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/SDL" CACHE PATH
+    "Path to the SDL3 source tree containing the DOS backend")
+if(NOT EXISTS "${SDL3_DOS_SOURCE_DIR}/CMakeLists.txt")
+    message(FATAL_ERROR
+        "SDL3 sources were not found at '${SDL3_DOS_SOURCE_DIR}'. "
+        "Clone https://github.com/libsdl-org/SDL into SDL/ or set "
+        "-DSDL3_DOS_SOURCE_DIR=/path/to/SDL.")
+endif()
+add_subdirectory("${SDL3_DOS_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/SDL" EXCLUDE_FROM_ALL)
+
+add_executable(hello main.c)
+target_link_libraries(hello PRIVATE SDL3::SDL3)
+
+add_executable(mistify mistify.c)
+target_link_libraries(mistify PRIVATE SDL3::SDL3)
+
+# Keep executable names within the DOS 8.3 filename limit.
+add_executable(sbtest soundtest.c)
+target_link_libraries(sbtest PRIVATE SDL3::SDL3)
+
+add_executable(modplay modplay.c)
+target_link_libraries(modplay PRIVATE SDL3::SDL3)

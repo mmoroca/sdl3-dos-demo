@@ -1,0 +1,34 @@
+# SDL3 source checkout is fetched separately; it is not part of this repository.
+/SDL/
+
+# CMake build trees used by the documented profiles.
+/build/
+/build-dos/
+/build-dos-small/
+/build-dos-fast/
+/build-dos-fast3/
+/build-*/
+/cmake-build-*/
+
+# CMake and Ninja generated state (at any directory depth).
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+Makefile
+build.ninja
+.ninja_deps
+.ninja_log
+Testing/
+
+# Compiled DOS programs and intermediate objects/libraries.
+*.exe
+*.o
+*.obj
+*.a
+*.lib
+
+# Runtime logs and host OS metadata.
+*.log
+.DS_Store
+Thumbs.db
