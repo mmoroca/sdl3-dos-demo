@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-# by @mmoroca & Leo.AI 2026 (http://Leo.AI)
+# by @mmoroca & Arena.AI 2026 (http://arena.ai/)
 project(sdl3_dos_demo LANGUAGES C)
 
 set(CMAKE_C_STANDARD 11)

@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-/* by @mmoroca & Leo.AI 2026 (http://Leo.AI) */
+/* by @mmoroca & Arena.AI 2026 (http://arena.ai/) */
 
 /*
  * Minimal SDL surface example: initialize a 320x200 window, set an indexed

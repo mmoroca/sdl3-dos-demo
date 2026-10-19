@@ -2,9 +2,9 @@
 
 [English](README.md) · [Español](README.es.md)
 
-**by @mmoroca & [Arena.AI](http://arena.ai) 2026**
+**by @mmoroca & [Arena.AI](http://arena.ai/) 2026**
 
-Conjunto de pequeños programas en C para MS-DOS, compilados con DJGPP y el backend DOS de SDL3. El código del proyecto es independiente de SDL3: durante la compilación se obtiene el código de SDL3 desde upstream y no se incluye en este repositorio.
+Conjunto de pequeños programas en C para MS-DOS, compilados con DJGPP y el backend DOS de SDL3. SDL3 se referencia como submódulo Git fijado a un commit upstream; su código fuente permanece en el proyecto SDL y no se copia dentro de este repositorio.
 
 ## Programas incluidos
 
@@ -26,7 +26,7 @@ Cada archivo C está organizado en secciones visibles para la configuración, el
 - CMake 3.16 o posterior.
 - Git.
 - Un compilador cruzado DJGPP cuyo destino sea `i386-pc-msdosdjgpp`, incluidos sus binutils.
-- Un checkout de SDL3 que contenga el backend DOS y el archivo de toolchain `build-scripts/i586-pc-msdosdjgpp.cmake`. SDL3 **no está incluido** en este repositorio. El port DOS se desarrolla en upstream; usa una revisión que contenga esos archivos. Las instrucciones siguientes clonan la rama `main`.
+- El submódulo Git de SDL3 en `SDL/`, fijado a un commit upstream que contiene el backend DOS y el archivo `build-scripts/i586-pc-msdosdjgpp.cmake`. SDL3 **no está vendorizado** en el proyecto; el repositorio solo registra el puntero al submódulo. Al clonar, inicialízalo para obtener la revisión exacta registrada.
 - Para probar en DOS, un host DPMI como `CWSDPMI.EXE`. Los ejemplos de audio requieren también una Sound Blaster compatible o una configuración de emulación equivalente.
 
 CMake busca SDL3 en `SDL/` de forma predeterminada. Para usar un checkout en otra ubicación, pasa `-DSDL3_DOS_SOURCE_DIR=/ruta/a/SDL` al configurar.
@@ -82,21 +82,20 @@ Comprueba que el compilador genera código para DJGPP:
 i386-pc-msdosdjgpp-gcc -v 2>&1 | grep Target
 ```
 
-La salida debe contener `Target: i386-pc-msdosdjgpp`. Para compilar desde GitHub, clona primero el proyecto en `DEMO_DIR`. Después obtén SDL3 por separado en el directorio de dependencias configurado:
+La salida debe contener `Target: i386-pc-msdosdjgpp`. Clona el proyecto e inicializa su submódulo SDL3 fijado, o inicializa el submódulo en un checkout existente:
 
 ```sh
-# Replace the URL if the GitHub owner or repository name differs.
+# Replace the project URL if the GitHub owner or repository name differs.
 if [ ! -d "$DEMO_DIR/.git" ]; then
-  git clone https://github.com/mmoroca/sdl3-dos-demo.git "$DEMO_DIR"
+  git clone --recurse-submodules https://github.com/mmoroca/sdl3-dos-demo.git "$DEMO_DIR"
+else
+  git -C "$DEMO_DIR" submodule update --init --recursive
 fi
 
-# SDL is an external dependency and is intentionally not committed to this repository.
-if [ ! -f "$SDL3_DOS_SOURCE_DIR/CMakeLists.txt" ]; then
-  git clone --depth 1 --branch main https://github.com/libsdl-org/SDL.git "$SDL3_DOS_SOURCE_DIR"
-fi
+export SDL3_DOS_SOURCE_DIR="${SDL3_DOS_SOURCE_DIR:-$DEMO_DIR/SDL}"
 ```
 
-Si alguno de los checkouts ya existe, no lo vuelvas a clonar encima. El archivo `.gitignore` del proyecto excluye la carpeta de dependencia predeterminada `SDL/` para evitar que sus archivos se añadan accidentalmente al repositorio.
+El checkout del submódulo queda fijado por el repositorio principal, así que `git submodule update --init --recursive` restaura exactamente la revisión registrada de SDL. Si usas un checkout de SDL independiente, define `SDL3_DOS_SOURCE_DIR` con esa ruta.
 
 ## Perfiles de compilación
 

@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* by @mmoroca & Leo.AI 2026 (http://Leo.AI) */
+/* by @mmoroca & Arena.AI 2026 (http://arena.ai/) */
 
 /*
  * The sound test synthesizes an original U8 mono melody, keeps a short SDL
