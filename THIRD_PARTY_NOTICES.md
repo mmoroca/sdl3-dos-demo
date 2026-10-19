@@ -2,7 +2,7 @@
 
 ## SDL3
 
-SDL3 is an external build dependency and is **not included** in this repository. The build instructions obtain it from [libsdl-org/SDL](https://github.com/libsdl-org/SDL). SDL 2.0 and newer, including SDL3, are distributed under the zlib license. This repository's MIT license applies only to the project's own files; it does not relicense SDL3.
+SDL3 is an external build dependency referenced by the `SDL` Git submodule, which points to [libsdl-org/SDL](https://github.com/libsdl-org/SDL). The parent repository records the upstream commit; SDL's source is not copied into the project. SDL 2.0 and newer, including SDL3, are distributed under the zlib license. This repository's MIT license applies only to the project's own files; it does not relicense SDL3.
 
 The SDL checkout contains the authoritative `LICENSE.txt`. The following is the upstream SDL zlib license text, included here as a convenient notice for source and binary distributions. Verify and retain the license supplied by the exact SDL revision you use.
 
