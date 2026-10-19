@@ -17,16 +17,12 @@ A set of small C programs for MS-DOS, built with DJGPP and the SDL3 DOS backend.
 
 ## Screenshots
 
-Capture the DOS screen as a PNG using DOSBox-X's **Capture → Take screenshot** command. Save the images in `docs/screenshots/` using these filenames; upload the images together with this README so the links resolve.
-
 | Demo | Screenshot |
 |---|---|
-| `HELLO.EXE` | ![HELLO.EXE running in DOSBox-X](docs/screenshots/hello.png) |
-| `MISTIFY.EXE` | ![MISTIFY.EXE running in DOSBox-X](docs/screenshots/mistify.png) |
-| `SBTEST.EXE` | ![SBTEST.EXE diagnostics in DOSBox-X](docs/screenshots/sbtest.png) |
-| `MODPLAY.EXE` | ![MODPLAY.EXE playing a module in DOSBox-X](docs/screenshots/modplay.png) |
-
-For Mistify, use DOSBox-X's screenshot shortcut (normally **Ctrl+F5**; some Mac keyboards require **Fn+Ctrl+F5**) instead of moving the pointer, because any mouse movement exits the demo.
+| `HELLO.EXE` | ![HELLO.EXE running in DOSBox-X](docs/hello.png) |
+| `MISTIFY.EXE` | ![MISTIFY.EXE running in DOSBox-X](docs/mistify.png) |
+| `SBTEST.EXE` | ![SBTEST.EXE diagnostics in DOSBox-X](docs/sbtest.png) |
+| `MODPLAY.EXE` | ![MODPLAY.EXE playing a module in DOSBox-X](docs/modplay.png) |
 
 The graphics examples request 320×200 indexed-color surfaces where supported. Mistify renders with a 256-color palette. All four programs use SDL software surfaces; the DOS backend uses VGA/VESA and does not require OpenGL or GPU acceleration. In-program text and command-line help are in English.
 
