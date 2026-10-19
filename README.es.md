@@ -2,7 +2,7 @@
 
 [English](README.md) · [Español](README.es.md)
 
-**by @mmoroca & [Leo.AI](http://Leo.AI) 2026**
+**by @mmoroca & [Arena.AI](http://arena.ai) 2026**
 
 Conjunto de pequeños programas en C para MS-DOS, compilados con DJGPP y el backend DOS de SDL3. El código del proyecto es independiente de SDL3: durante la compilación se obtiene el código de SDL3 desde upstream y no se incluye en este repositorio.
 
