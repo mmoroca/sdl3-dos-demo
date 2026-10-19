@@ -15,6 +15,19 @@ Conjunto de pequeños programas en C para MS-DOS, compilados con DJGPP y el back
 | `SBTEST.EXE` | `soundtest.c` | Reproduce una melodía original generada como PCM mono sin signo de 8 bits a 11025 Hz y muestra diagnósticos de audio/dispositivo. **Esc** sale; `/L` activa `SBTEST.LOG`. |
 | `MODPLAY.EXE` | `modplay.c` | Reproduce módulos ProTracker dentro de estos límites: 31 muestras y 4 canales. Salida predeterminada: 22050 Hz, 8 bits, mono. **Space** pausa/reanuda y **Esc** sale. |
 
+## Capturas de pantalla
+
+Captura la pantalla DOS como PNG desde el menú **Capture → Take screenshot** de DOSBox-X. Guarda las imágenes en `docs/screenshots/` con estos nombres y súbelas junto con este README para que se vean los enlaces.
+
+| Demo | Captura |
+|---|---|
+| `HELLO.EXE` | ![HELLO.EXE ejecutándose en DOSBox-X](docs/screenshots/hello.png) |
+| `MISTIFY.EXE` | ![MISTIFY.EXE ejecutándose en DOSBox-X](docs/screenshots/mistify.png) |
+| `SBTEST.EXE` | ![Diagnóstico de SBTEST.EXE en DOSBox-X](docs/screenshots/sbtest.png) |
+| `MODPLAY.EXE` | ![MODPLAY.EXE reproduciendo un módulo en DOSBox-X](docs/screenshots/modplay.png) |
+
+Para Mistify, usa el atajo de captura de DOSBox-X (normalmente **Ctrl+F5**; algunos teclados Mac requieren **Fn+Ctrl+F5**) en vez de mover el puntero, porque cualquier movimiento del ratón termina el programa.
+
 Los ejemplos gráficos solicitan superficies indexadas de 320×200 cuando están disponibles. Mistify dibuja con una paleta de 256 colores. Los cuatro programas usan superficies SDL por software; el backend DOS utiliza VGA/VESA y no necesita OpenGL ni aceleración de GPU. Los textos y la ayuda visibles dentro de los programas están en inglés.
 
 ## Organización del código
@@ -203,11 +216,12 @@ El reproductor mezcla cuatro voces PCM y admite efectos comunes de ProTracker, c
 
 ## Licencia y software de terceros
 
-Los archivos originales del proyecto se distribuyen bajo la licencia MIT; consulta [`LICENSE`](LICENSE). SDL3 es una dependencia externa, no incluida, y conserva su licencia upstream zlib. El proyecto no relicencia SDL3. Consulta [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) y el archivo `LICENSE.txt` del checkout de SDL.
+Los archivos originales del proyecto se distribuyen bajo la licencia MIT; consulta [`LICENSE`](LICENSE). SDL3 se referencia mediante un submódulo Git y conserva la licencia upstream zlib; el repositorio principal solo guarda el puntero al submódulo, no el código fuente de SDL. Consulta [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) y el archivo `LICENSE.txt` del submódulo.
 
 ## Referencias
 
 - [SDL3: instrucciones del backend DOS](https://wiki.libsdl.org/SDL3/README-dos)
 - [SDL3: configuración con CMake](https://wiki.libsdl.org/SDL3/README-cmake)
 - [Licencia de SDL](https://www.libsdl.org/license.php)
+- [Captura desde el menú de DOSBox-X](https://dosbox-x.com/wiki/DOSBox%E2%80%90X%E2%80%99s-Drop%E2%80%90Down-Menus)
 - [Cross-compiler DJGPP build-gcc](https://github.com/jwt27/build-gcc)

@@ -15,6 +15,19 @@ A set of small C programs for MS-DOS, built with DJGPP and the SDL3 DOS backend.
 | `SBTEST.EXE` | `soundtest.c` | Plays an original generated melody as 11025 Hz, unsigned 8-bit mono PCM and shows audio/device diagnostics. **Esc** exits; `/L` enables `SBTEST.LOG`. |
 | `MODPLAY.EXE` | `modplay.c` | Plays bounded ProTracker modules (31 samples, 4 channels). Default output: 22050 Hz, 8-bit, mono. **Space** pauses/resumes and **Esc** exits. |
 
+## Screenshots
+
+Capture the DOS screen as a PNG using DOSBox-X's **Capture → Take screenshot** command. Save the images in `docs/screenshots/` using these filenames; upload the images together with this README so the links resolve.
+
+| Demo | Screenshot |
+|---|---|
+| `HELLO.EXE` | ![HELLO.EXE running in DOSBox-X](docs/screenshots/hello.png) |
+| `MISTIFY.EXE` | ![MISTIFY.EXE running in DOSBox-X](docs/screenshots/mistify.png) |
+| `SBTEST.EXE` | ![SBTEST.EXE diagnostics in DOSBox-X](docs/screenshots/sbtest.png) |
+| `MODPLAY.EXE` | ![MODPLAY.EXE playing a module in DOSBox-X](docs/screenshots/modplay.png) |
+
+For Mistify, use DOSBox-X's screenshot shortcut (normally **Ctrl+F5**; some Mac keyboards require **Fn+Ctrl+F5**) instead of moving the pointer, because any mouse movement exits the demo.
+
 The graphics examples request 320×200 indexed-color surfaces where supported. Mistify renders with a 256-color palette. All four programs use SDL software surfaces; the DOS backend uses VGA/VESA and does not require OpenGL or GPU acceleration. In-program text and command-line help are in English.
 
 ## Source organization
@@ -203,11 +216,12 @@ The player mixes four PCM voices and supports common ProTracker effects, includi
 
 ## License and third-party software
 
-The original project files are licensed under the MIT License; see [`LICENSE`](LICENSE). SDL3 is a separate, unvendored dependency and remains under its upstream zlib license. The project does not relicense SDL3. See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) and the SDL checkout's `LICENSE.txt` for details.
+The original project files are licensed under the MIT License; see [`LICENSE`](LICENSE). SDL3 is referenced through a Git submodule and remains under its upstream zlib license; the parent repository stores only the submodule pointer, not SDL's source. See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) and the submodule's `LICENSE.txt` for details.
 
 ## References
 
 - [SDL3 DOS README](https://wiki.libsdl.org/SDL3/README-dos)
 - [SDL3 CMake README](https://wiki.libsdl.org/SDL3/README-cmake)
 - [SDL licensing](https://www.libsdl.org/license.php)
+- [DOSBox-X capture menu](https://dosbox-x.com/wiki/DOSBox%E2%80%90X%E2%80%99s-Drop%E2%80%90Down-Menus)
 - [build-gcc DJGPP cross-compiler](https://github.com/jwt27/build-gcc)
