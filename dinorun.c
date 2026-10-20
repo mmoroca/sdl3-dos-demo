@@ -43,6 +43,8 @@
 #define FP_SHIFT 8
 #define FP_ONE (1 << FP_SHIFT)
 #define GROUND_Y 163
+/* Raise only the drawn ground/track; sprite anchors and gameplay physics stay put. */
+#define GROUND_VISUAL_OFFSET_PX 14
 #define DINO_X 42
 #define DINO_WIDTH 26
 #define DINO_HEIGHT 28
@@ -1914,10 +1916,12 @@ static void draw_clouds(SDL_Surface *surface, const DinoGame *game, Uint32 ticks
 
 /*
  * Tile the track bitmap using the accumulated scroll offset, or draw a scrolling
- * procedural line when missing.
+ * procedural line when missing. The visual ground is raised independently; the
+ * runner, obstacle anchors, collision checks, and physics continue using GROUND_Y.
  */
 static void draw_ground(SDL_Surface *surface, const DinoGame *game, Uint32 ticks)
 {
+    const int visual_ground_y = GROUND_Y - GROUND_VISUAL_OFFSET_PX;
     (void)ticks;
     if (game->assets.track) {
         SDL_Surface *track = game->assets.track;
@@ -1926,17 +1930,18 @@ static void draw_ground(SDL_Surface *surface, const DinoGame *game, Uint32 ticks
         int x = -offset;
         /* Tile until the entire viewport is covered, including the wrap seam. */
         while (x < SCREEN_WIDTH) {
-            blit_indexed_scaled(surface, track, x, GROUND_Y - 10,
+            blit_indexed_scaled(surface, track, x, visual_ground_y - 10,
                                 track->w, track->h);
             x += track->w;
         }
     } else {
         const int offset = (int)((game->ground_scroll_fp / FP_ONE) % 24U);
         int x;
-        draw_line(surface, 0, GROUND_Y, SCREEN_WIDTH - 1, GROUND_Y, COLOR_BLACK);
+        draw_line(surface, 0, visual_ground_y, SCREEN_WIDTH - 1,
+                  visual_ground_y, COLOR_BLACK);
         for (x = -offset; x < SCREEN_WIDTH; x += 24) {
-            fill_rect(surface, x, GROUND_Y + 5, 9, 1, COLOR_MID);
-            fill_rect(surface, x + 13, GROUND_Y + 9, 4, 1, COLOR_LIGHT);
+            fill_rect(surface, x, visual_ground_y + 5, 9, 1, COLOR_MID);
+            fill_rect(surface, x + 13, visual_ground_y + 9, 4, 1, COLOR_LIGHT);
         }
     }
 }
