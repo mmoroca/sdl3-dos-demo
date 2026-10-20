@@ -14,6 +14,7 @@ Conjunto de pequeños programas en C para MS-DOS, compilados con DJGPP y el back
 | `MISTIFY.EXE` | `mistify.c` | Cuadriláteros animados con paleta de 256 colores y estelas degradadas. Valores predeterminados: 48 fotogramas de estela, 2 polígonos y velocidad normal. Sale al pulsar cualquier tecla o mover el ratón. `/L` activa `MISTIFY.LOG`. |
 | `SBTEST.EXE` | `soundtest.c` | Reproduce una melodía original generada como PCM mono sin signo de 8 bits a 11025 Hz y muestra diagnósticos de audio/dispositivo. **Esc** sale; `/L` activa `SBTEST.LOG`. |
 | `MODPLAY.EXE` | `modplay.c` | Reproduce módulos ProTracker dentro de estos límites: 31 muestras y 4 canales. Salida predeterminada: 22050 Hz, 8 bits, mono. **Space** pausa/reanuda y **Esc** sale. |
+| `DINO.EXE` | `dinorun.c` | El corredor intenta esquivar automáticamente; la agilidad aleatoria puede hacer que falle el momento. Coloca un cactus con **Q** o un pájaro con **P**. Los sprites se muestran por defecto a media escala (`/s 2`); `/h` muestra la ayuda. **Space** inicia/pausa y **Esc** sale. El Top 10 ordena primero los tiempos más cortos. |
 
 ## Capturas de pantalla
 
@@ -23,12 +24,13 @@ Conjunto de pequeños programas en C para MS-DOS, compilados con DJGPP y el back
 | `MISTIFY.EXE` | ![MISTIFY.EXE ejecutándose en DOSBox-X](docs/mistify.png) |
 | `SBTEST.EXE` | ![Diagnóstico de SBTEST.EXE en DOSBox-X](docs/sbtest.png) |
 | `MODPLAY.EXE` | ![MODPLAY.EXE reproduciendo un módulo en DOSBox-X](docs/modplay.png) |
+| `DINO.EXE` | ![DINO.EXE ejecutándose en DOSBox-X](docs/dino.png) |
 
-Los ejemplos gráficos solicitan superficies indexadas de 320×200 cuando están disponibles. Mistify dibuja con una paleta de 256 colores. Los cuatro programas usan superficies SDL por software; el backend DOS utiliza VGA/VESA y no necesita OpenGL ni aceleración de GPU. Los textos y la ayuda visibles dentro de los programas están en inglés.
+Los ejemplos gráficos solicitan superficies indexadas de 320×200 cuando están disponibles. Mistify dibuja con una paleta de 256 colores; Dino Fall usa una paleta compartida de grises y una clave de transparencia. Los cinco programas usan superficies SDL por software; el backend DOS utiliza VGA/VESA y no necesita OpenGL ni aceleración de GPU. Los textos y la ayuda visibles dentro de los programas están en inglés.
 
 ## Organización del código
 
-Cada archivo C está organizado en secciones visibles para la configuración, el estado, la inicialización, la entrada, el bucle principal y la limpieza. Los recursos se liberan de forma segura aunque falle una etapa de inicialización; no se usan sentencias `goto`.
+Cada archivo C está organizado en secciones visibles para la configuración, el estado, la inicialización, la entrada, el bucle principal y la limpieza. `dinorun.c` documenta el estado, la propiedad de los recursos, los tiempos/física, la maniobra aleatoria, las máscaras de colisión, el dibujo y el flujo de eventos. `tools/convert_assets.py` es una utilidad PNG→BMP genérica, y `trimexe.sh` crea copias de ejecutables sin modificar los originales. Los recursos se liberan de forma segura aunque falle una etapa de inicialización; no se usan sentencias `goto`.
 
 ## Requisitos
 
@@ -122,7 +124,7 @@ cmake -S "$DEMO_DIR" -B "$DEMO_DIR/build-dos" \
 cmake --build "$DEMO_DIR/build-dos" --parallel
 ```
 
-El archivo de toolchain se llama `i586-pc-msdosdjgpp.cmake`; el compilador se indica explícitamente como `i386-pc-msdosdjgpp-gcc`. CMake genera `hello.exe`, `mistify.exe`, `sbtest.exe` y `modplay.exe` dentro del directorio de compilación elegido. Si cambias de compilador o toolchain después de configurar, usa un directorio de compilación nuevo para que CMake no reutilice la caché anterior.
+El archivo de toolchain se llama `i586-pc-msdosdjgpp.cmake`; el compilador se indica explícitamente como `i386-pc-msdosdjgpp-gcc`. CMake genera `hello.exe`, `mistify.exe`, `sbtest.exe`, `modplay.exe` y `dino.exe` dentro del directorio de compilación elegido. Si cambias de compilador o toolchain después de configurar, usa un directorio de compilación nuevo para que CMake no reutilice la caché anterior.
 
 ### Compilación Release optimizada para tamaño
 
@@ -141,6 +143,16 @@ cmake --build "$DEMO_DIR/build-dos-small" --parallel
 ```
 
 `-Os` prioriza un menor tamaño de código; las secciones separadas de funciones/datos y `--gc-sections` permiten descartar secciones sin uso. Si el enlazador del toolchain no admite `--gc-sections`, quita esa opción y las opciones de secciones; puedes conservar `-Os -DNDEBUG`. Este perfil no solicita instrucciones exclusivas de 486.
+
+#### Crear copias sin símbolos
+
+Después de compilar, `trimexe.sh` crea copias reducidas de los ejecutables de una carpeta sin modificar los originales:
+
+```sh
+bash "$DEMO_DIR/trimexe.sh" "$DEMO_DIR/build-dos-small"
+```
+
+Solo examina esa carpeta, no las subcarpetas; acepta extensiones `.exe` y `.EXE`. Añade `str.exe` al nombre base (por ejemplo, `dino.exe` produce `dinostr.exe`). Ejecuta `i386-pc-msdosdjgpp-strip --strip-all`, que elimina de las copias la tabla de símbolos, incluidos los símbolos de depuración. Omite los archivos que ya terminan en `str.exe`, por lo que se puede repetir sin volver a procesar las salidas. El binario `strip` de DJGPP debe estar en `PATH`; puedes indicar otra ruta mediante `STRIP_TOOL=/ruta/a/i386-pc-msdosdjgpp-strip`. Consulta `bash "$DEMO_DIR/trimexe.sh" --help` para ver el uso.
 
 ### Compilación Release para rendimiento en 486 o superior
 
@@ -170,6 +182,26 @@ DJGPP genera ejecutables DPMI de 32 bits. Proporciona un host DPMI compatible, c
 C:
 HELLO.EXE
 ```
+
+### Dino Fall
+
+```text
+DINO.EXE
+DINO.EXE /s 1
+DINO.EXE /s 2
+DINO.EXE /s 3
+DINO.EXE /h
+```
+
+El dinosaurio intenta saltar los cactus y agacharse ante los pájaros. Su agilidad se sortea para cada obstáculo: un ajuste entre 100 ms antes y 260 ms después aleja el despegue del cactus del punto calculado como seguro; frente a un pájaro, retrasa el inicio de la agachada y adelanta el momento de levantarse (o, con un valor negativo, empieza antes). Una mala tirada puede volver impreciso cualquiera de los dos movimientos, y las colisiones directas se comprueban con las máscaras de los sprites. La pantalla de título dice “MAKE THE DINO FALL AS FAST AS YOU CAN!”. Coloca obstáculos en su camino: **Q** coloca un cactus y **P** un pájaro. **Space** inicia una partida, la pausa/reanuda o inicia otra después de una colisión; **Esc** sale. Si el audio está disponible, suena una melodía aguda de tres notas al saltar y otra grave de cuatro notas al perder.
+
+El tamaño 2 (media escala) es el predeterminado. `/s 1` muestra los sprites fuente a tamaño completo 1:1, `/s 2` a la mitad y `/s 3` usa el anterior tamaño personalizado más pequeño; la pantalla sigue siendo de 320×200. `/h` muestra la ayuda. Por compatibilidad, `--native-sprites`, `--half-sprites` y `--scaled-sprites` siguen siendo alias de los tamaños 1, 2 y 3; también funciona `--help`. Game Over y Reset siguen el tamaño elegido: en el modo 2, el rótulo de 386×40 queda en 193×20 y el icono Reset de 75×101 se redondea a 38×51 píxeles. Las dimensiones impares se redondean hacia arriba a un píxel entero.
+
+Cada partida termina cuando el dinosaurio choca. Se registra la duración en milisegundos; **los tiempos más cortos ocupan los mejores puestos**. El jugador empieza con 2 cargas y una capacidad de 6; inicialmente se repone una carga cada 5 segundos y la capacidad aumenta en 1 cada 30 segundos. El intervalo de recarga baja 0,5 segundos cada 10 segundos, hasta un mínimo de 2 segundos. El tiempo de espera para colocar obstáculos empieza en 0,4 segundos y baja 0,05 segundos cada 15 segundos, hasta 0,15 segundos. Cada obstáculo recibe un error de agilidad aleatorio e independiente, entre 100 ms antes y 260 ms después. En los cactus desplaza el despegue respecto a la ventana calculada como segura; ante los pájaros retrasa el inicio de la agachada y adelanta el momento de levantarse, de modo que una mala tirada puede causar una colisión directa. Los valores negativos favorecen una reacción más temprana. El arco del salto sigue adaptándose al tamaño del cactus y a la velocidad. El corredor empieza a 104 px/s, acelera gradualmente y alcanza un máximo de 190 px/s. El espaciado conserva una separación de recorrido de 350 ms, un margen de 8 píxeles y el ancho del corredor. El HUD muestra tiempo, cargas y velocidad; se han quitado el medidor `CD` (tiempo de espera entre colocaciones), los mensajes temporales de colocado/espera y la línea inferior de controles. Los controles están indicados arriba.
+
+El Top 10 local se guarda como texto plano en `DINO.SCO`, en el directorio de trabajo actual. Si un resultado entra en la tabla, se pide un nombre de hasta 8 letras, números, guiones o guiones bajos. `DINO.SCO` es un archivo de datos de ejecución y Git lo ignora. El juego carga desde la carpeta local `Images/` el corredor, los pájaros, seis variantes de cactus, las nubes, el suelo, el rótulo de fin de partida y el icono de reinicio. La distribución recomendada conserva sus subcarpetas y nombres DOS (por ejemplo, `Images/DINO/RUN1.BMP`); el cargador también prueba algunos formatos BMP aplanados junto al ejecutable. No carga directamente los PNG. Primero busca junto a `DINO.EXE` y luego en el directorio de trabajo actual. CMake copia `Images/` junto al ejecutable; si lo mueves, copia también la carpeta completa. Los BMP tienen 8 bits, escala de grises/indexada y una clave de transparencia, por lo que no hace falta SDL_image.
+
+El conjunto de BMP de ejecución en `Images/` usa la paleta de grises del juego y el índice transparente 5. `tools/convert_assets.py` es una utilidad PNG→BMP independiente y genérica: ejecútala como `python3 tools/convert_assets.py DIRECTORIO_PNG DIRECTORIO_BMP`. Convierte recursivamente PNG no entrelazados y conserva sus dimensiones (sin límite fijo de 320×200; limitadas por el formato BMP y la memoria disponible) y genera BMP de 8 bits con una paleta RGB 3:3:2 compartida de 256 entradas. Los nombres largos reciben alias DOS 8.3 deterministas en mayúsculas. Los píxeles transparentes se componen sobre negro de forma predeterminada; puedes elegir otro color con `--matte RRGGBB`. `--clean` elimina los BMP obsoletos solo después de convertir correctamente todas las imágenes, conservando los BMP nuevos y los archivos que no sean BMP. La utilidad solo necesita la biblioteca estándar de Python. Su paleta RGB 3:3:2 no es la paleta de grises ni la clave de transparencia que espera el juego; no la uses para sobrescribir los recursos actuales de `Images/` sin adaptar deliberadamente el manejo de paleta del juego.
 
 ### Mistify
 
@@ -212,7 +244,7 @@ El reproductor mezcla cuatro voces PCM y admite efectos comunes de ProTracker, c
 
 ## Licencia y software de terceros
 
-Los archivos originales del proyecto se distribuyen bajo la licencia MIT; consulta [`LICENSE`](LICENSE). SDL3 se referencia mediante un submódulo Git y conserva la licencia upstream zlib; el repositorio principal solo guarda el puntero al submódulo, no el código fuente de SDL. Consulta [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) y el archivo `LICENSE.txt` del submódulo.
+El código y la documentación propios del proyecto se distribuyen bajo MIT; consulta [`LICENSE`](LICENSE). Esa licencia de código no cubre los gráficos PNG/BMP: el propietario preparó adaptaciones para este proyecto y la colección de referencia no publicaba una licencia independiente para los assets cuando se comprobó. Consulta [`Images-src/README.md`](Images-src/README.md) antes de redistribuir los gráficos por separado. SDL3 es un submódulo Git externo y conserva la licencia upstream zlib; su código fuente no está vendorizado. Consulta [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) y el archivo `LICENSE.txt` de SDL.
 
 ## Referencias
 

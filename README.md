@@ -14,6 +14,7 @@ A set of small C programs for MS-DOS, built with DJGPP and the SDL3 DOS backend.
 | `MISTIFY.EXE` | `mistify.c` | Animated quadrilaterals with a 256-color palette and fading trails. Defaults: 48 trail frames, 2 polygons, normal speed. Any key or mouse movement exits. `/L` enables `MISTIFY.LOG`. |
 | `SBTEST.EXE` | `soundtest.c` | Plays an original generated melody as 11025 Hz, unsigned 8-bit mono PCM and shows audio/device diagnostics. **Esc** exits; `/L` enables `SBTEST.LOG`. |
 | `MODPLAY.EXE` | `modplay.c` | Plays bounded ProTracker modules (31 samples, 4 channels). Default output: 22050 Hz, 8-bit, mono. **Space** pauses/resumes and **Esc** exits. |
+| `DINO.EXE` | `dinorun.c` | The runner attempts to dodge automatically; random agility can make its timing imprecise. Place a cactus with **Q** or a bird with **P**. Sprites default to half size (`/s 2`); `/h` shows help. **Space** starts/pauses and **Esc** exits. The Top 10 ranks shorter times first. |
 
 ## Screenshots
 
@@ -23,12 +24,13 @@ A set of small C programs for MS-DOS, built with DJGPP and the SDL3 DOS backend.
 | `MISTIFY.EXE` | ![MISTIFY.EXE running in DOSBox-X](docs/mistify.png) |
 | `SBTEST.EXE` | ![SBTEST.EXE diagnostics in DOSBox-X](docs/sbtest.png) |
 | `MODPLAY.EXE` | ![MODPLAY.EXE playing a module in DOSBox-X](docs/modplay.png) |
+| `DINO.EXE` | ![DINO.EXE running in DOSBox-X](docs/dino.png) |
 
-The graphics examples request 320×200 indexed-color surfaces where supported. Mistify renders with a 256-color palette. All four programs use SDL software surfaces; the DOS backend uses VGA/VESA and does not require OpenGL or GPU acceleration. In-program text and command-line help are in English.
+The graphics examples request 320×200 indexed-color surfaces where supported. Mistify renders with a 256-color palette; Dino Fall uses a shared grayscale palette and transparent key. All five programs use SDL software surfaces; the DOS backend uses VGA/VESA and does not require OpenGL or GPU acceleration. In-program text and command-line help are in English.
 
 ## Source organization
 
-Each C file is organized into visible sections for configuration, state, initialization, input, the main loop, and cleanup. Resources are released safely after partial initialization failures; there are no `goto` statements.
+Each C file is organized into visible sections for configuration, state, initialization, input, the main loop, and cleanup. `dinorun.c` documents its state, resource ownership, timing/physics, randomized maneuver logic, collision-mask math, rendering, and event flow. `tools/convert_assets.py` is a project-neutral PNG-to-BMP utility, and `trimexe.sh` creates stripped executable copies while leaving the originals intact. Resources are released safely after partial initialization failures; there are no `goto` statements.
 
 ## Requirements
 
@@ -122,7 +124,7 @@ cmake -S "$DEMO_DIR" -B "$DEMO_DIR/build-dos" \
 cmake --build "$DEMO_DIR/build-dos" --parallel
 ```
 
-The toolchain file is named `i586-pc-msdosdjgpp.cmake`; the compiler is explicitly set to `i386-pc-msdosdjgpp-gcc`. CMake creates `hello.exe`, `mistify.exe`, `sbtest.exe`, and `modplay.exe` in the selected build directory. If changing compiler or toolchain after configuration, use a fresh build directory so CMake does not reuse the old cache.
+The toolchain file is named `i586-pc-msdosdjgpp.cmake`; the compiler is explicitly set to `i386-pc-msdosdjgpp-gcc`. CMake creates `hello.exe`, `mistify.exe`, `sbtest.exe`, `modplay.exe`, and `dino.exe` in the selected build directory. If changing compiler or toolchain after configuration, use a fresh build directory so CMake does not reuse the old cache.
 
 ### Release build optimized for size
 
@@ -141,6 +143,16 @@ cmake --build "$DEMO_DIR/build-dos-small" --parallel
 ```
 
 `-Os` favors smaller code; function/data sections and `--gc-sections` allow unused sections to be discarded. If the toolchain linker does not support `--gc-sections`, remove that linker option and the section flags; `-Os -DNDEBUG` can remain. This profile does not request 486-only instructions.
+
+#### Create stripped copies
+
+After building, `trimexe.sh` can make stripped copies of the executables in a build directory without changing the originals:
+
+```sh
+bash "$DEMO_DIR/trimexe.sh" "$DEMO_DIR/build-dos-small"
+```
+
+It scans only the specified directory (not its subdirectories), accepts `.exe` and `.EXE`, and creates a sibling copy with `str.exe` appended to the base name (for example, `dino.exe` becomes `dinostr.exe`). It uses `i386-pc-msdosdjgpp-strip --strip-all`, so symbols including debug symbols are removed from the copies. Existing files ending in `str.exe` are skipped, which makes repeat runs safe. The DJGPP strip utility must be on `PATH`; set `STRIP_TOOL=/path/to/i386-pc-msdosdjgpp-strip` to override it. Run `bash "$DEMO_DIR/trimexe.sh" --help` for usage and options.
 
 ### Release build for 486-class performance
 
@@ -170,6 +182,26 @@ DJGPP creates 32-bit DPMI executables. Provide a compatible DPMI host, such as `
 C:
 HELLO.EXE
 ```
+
+### Dino Fall
+
+```text
+DINO.EXE
+DINO.EXE /s 1
+DINO.EXE /s 2
+DINO.EXE /s 3
+DINO.EXE /h
+```
+
+The dinosaur attempts to jump over cacti and duck under birds. Its agility is randomized for each obstacle: an offset from 100 ms early to 260 ms late shifts cactus takeoff away from the calculated safe point, while for birds it shifts duck onset later and releases the duck early (or, for negative rolls, starts sooner). A poor roll can make either maneuver imprecise, and direct collisions are checked against the sprite masks. The title screen reads “MAKE THE DINO FALL AS FAST AS YOU CAN!” Place obstacles in its path: **Q** places a cactus and **P** places a bird. **Space** starts a run, pauses/resumes it, or starts another run after a collision; **Esc** exits. A three-note high melody plays on a jump and a four-note low melody on a loss when audio is available.
+
+Sprite size 2 (half-size) is the default. `/s 1` displays source sprites at full 1:1 size, `/s 2` draws them at half size, and `/s 3` selects the previous smallest custom-scaled size; the display remains 320×200. `/h` shows help. For compatibility, `--native-sprites`, `--half-sprites`, and `--scaled-sprites` remain aliases for sizes 1, 2, and 3; `--help` also works. Game Over and Reset follow the selected size: at size 2, the 386×40 title is 193×20 and the 75×101 reset icon rounds up to 38×51 pixels. Odd half-size dimensions round up to a whole pixel.
+
+Each run ends when the dinosaur collides. The run duration is recorded in milliseconds; **shorter times rank higher**. The player starts with 2 charges and a capacity of 6; one charge is replenished every 5 seconds initially, and the capacity grows by 1 every 30 seconds. Refill time decreases by 0.5 seconds every 10 seconds, down to 2 seconds. The placement cooldown starts at 0.4 seconds and drops by 0.05 seconds every 15 seconds, down to 0.15 seconds. Each obstacle gets an independent random agility error from 100 ms early to 260 ms late. For cacti it shifts the jump takeoff away from the calculated safe window; for birds it shifts duck onset later and releases the duck earlier, so a poor roll can cause a direct collision. Negative values favor earlier movement. The jump arc still adapts to cactus size and speed. The runner starts at 104 px/s, ramps gradually, and caps at 190 px/s. Placement spacing enforces a 350 ms travel gap plus an 8-pixel margin and the runner width. The gameplay HUD shows time, supply, and speed; the old `CD` cooldown meter, temporary placement/wait messages, and bottom control footer have been removed. The controls are listed above.
+
+The local Top 10 is stored as plain text in `DINO.SCO` in the current working directory. If a run qualifies, enter a name of up to 8 letters, digits, hyphens, or underscores. `DINO.SCO` is runtime data and is ignored by Git. The game loads the runner, birds, six cactus variants, clouds, track, game-over title, and reset icon from the local `Images/` folder. The preferred layout keeps its DOS-friendly subfolders and filenames (for example, `Images/DINO/RUN1.BMP`); the loader also tries common flattened BMP layouts beside the executable. The PNGs are not loaded directly. It searches beside `DINO.EXE` first, then in the current working directory. CMake copies `Images/` beside the executable; if you move the executable, copy that whole folder alongside it. The BMPs are 8-bit grayscale/indexed with a transparent palette key, so no SDL_image library is required.
+
+The checked-in runtime BMP set in `Images/` uses the game's shared grayscale palette and transparent index 5. `tools/convert_assets.py` is a separate, general-purpose PNG-to-BMP utility: run `python3 tools/convert_assets.py PNG_SOURCE_DIRECTORY BMP_OUTPUT_DIRECTORY`. It recursively converts non-interlaced PNGs, preserves their dimensions (no fixed 320×200 limit; bounded by the BMP format and available memory), and writes 8-bit BMPs that all share a 256-entry RGB 3:3:2 palette. Long names receive deterministic uppercase DOS 8.3 aliases. Transparent pixels are composited over black by default; choose another matte with `--matte RRGGBB`. `--clean` removes stale BMPs after successful conversion, while preserving the newly generated BMPs and non-BMP files. The utility uses only Python's standard library. Its shared RGB 3:3:2 palette is not the game's grayscale/transparency-key palette, so don't use it to overwrite the current `Images/` runtime assets without deliberately changing the game's palette handling.
 
 ### Mistify
 
@@ -212,7 +244,7 @@ The player mixes four PCM voices and supports common ProTracker effects, includi
 
 ## License and third-party software
 
-The original project files are licensed under the MIT License; see [`LICENSE`](LICENSE). SDL3 is referenced through a Git submodule and remains under its upstream zlib license; the parent repository stores only the submodule pointer, not SDL's source. See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) and the submodule's `LICENSE.txt` for details.
+The project-authored code and documentation are licensed under MIT; see [`LICENSE`](LICENSE). That code license does not cover the PNG/BMP artwork: the project owner prepared image adaptations for this project, and the referenced source collection did not publish a separate asset license when checked. See [`Images-src/README.md`](Images-src/README.md) for context before redistributing the artwork separately. SDL3 is an external Git submodule and remains under its upstream zlib license; its source is not vendored. See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) and SDL's `LICENSE.txt`.
 
 ## References
 
