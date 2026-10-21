@@ -2656,12 +2656,16 @@ static void shutdown_shooter(ShooterApp *app)
 
 static void print_usage(void)
 {
-    puts("Usage: SHOOTER.EXE [/H]");
+    puts("Usage: SHOOTER.EXE [/L] [/H]");
     puts("");
     puts("Full-screen 320x200 SDL3/DOS arcade shooter.");
     puts("Displays SHOWCASE/UFO.BMP for 5 seconds at startup, then starts with");
     puts("1 descending UFO; each hit spawns 2 new UFOs (up to 256 simultaneous");
     puts("live enemies on screen) until one impacts your ship.");
+    puts("");
+    puts("Options:");
+    puts("  /L, /LOG        Write startup/summary info to SHOOTER.LOG (off by default)");
+    puts("  /H, /?          Show this help text");
     puts("");
     puts("UFO color <-> behavior:");
     puts("  Blue   (UFOBLUE.BMP)   Sinusoidal horizontal wave");
@@ -2682,6 +2686,7 @@ static void print_usage(void)
 int main(int argc, char **argv)
 {
     ShooterApp app = { 0 };
+    bool log_enabled = false;
     bool video_ready;
     bool run_ok = true;
     int exit_status = 1;
@@ -2696,9 +2701,25 @@ int main(int argc, char **argv)
             print_usage();
             return 0;
         }
+        if (SDL_strcasecmp(arg, "/l") == 0 ||
+            SDL_strcasecmp(arg, "/log") == 0 ||
+            SDL_strcasecmp(arg, "-l") == 0 ||
+            SDL_strcasecmp(arg, "--log") == 0) {
+            log_enabled = true;
+        } else {
+            fprintf(stderr, "Unknown option: %s\n\n", arg);
+            print_usage();
+            return 1;
+        }
     }
 
-    log_file = fopen(LOG_FILE, "w");
+    if (log_enabled) {
+        log_file = fopen(LOG_FILE, "w");
+        if (!log_file) {
+            fprintf(stderr, "Warning: could not open %s; continuing without debug logging.\n",
+                    LOG_FILE);
+        }
+    }
     LOG("SHOOTER start");
 
     set_default_data(&app);
@@ -2723,8 +2744,11 @@ int main(int argc, char **argv)
         run_ok = run_shooter(&app);
         fade_out_before_exit(&app);
         exit_status = run_ok ? 0 : 1;
-    } else {
+    } else if (log_enabled) {
         fprintf(stderr, "SHOOTER could not initialize the display. See %s if writable.\n",
+                LOG_FILE);
+    } else {
+        fprintf(stderr, "SHOOTER could not initialize the display. Run with /L to write %s.\n",
                 LOG_FILE);
     }
 
@@ -2736,7 +2760,7 @@ int main(int argc, char **argv)
         log_file = NULL;
     }
     if (video_ready) {
-        puts("Gracias por jugar!");
+        puts("¡Gracias por jugar!");
         fflush(stdout);
     }
     return exit_status;

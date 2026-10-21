@@ -14,8 +14,8 @@ A set of small C programs for MS-DOS, built with DJGPP and the SDL3 DOS backend.
 | `MISTIFY.EXE` | `mistify.c` | Animated quadrilaterals with a 256-color palette and fading trails. Defaults: 48 trail frames, 2 polygons, normal speed. Any key or mouse movement exits. `/L` enables `MISTIFY.LOG`. |
 | `SBTEST.EXE` | `soundtest.c` | Plays an original generated melody as 11025 Hz, unsigned 8-bit mono PCM and shows audio/device diagnostics. **Esc** exits; `/L` enables `SBTEST.LOG`. |
 | `MODPLAY.EXE` | `modplay.c` | Plays bounded ProTracker modules (31 samples, 4 channels). Default output: 22050 Hz, 8-bit, mono. **Space** pauses/resumes and **Esc** exits. |
-| `SHOWCASE.EXE` | `showcase.c` | Function-oriented SDL3 starter: 320×200 indexed display, palette fade, text/keyboard input, optional eight-way joystick, audio diagnostics and PCM effects, saved settings/high score, and a four-panel mini-shooter. **Arrows/WASD** move, **Space** fires, **T** edits the call sign, **F1** fades, **M** toggles music, **F2/F3** save/load settings, **-/+** adjusts volume, **Esc** exits. |
-| `SHOOTER.EXE` | `shooter.c` | Standalone full-screen 320×200 arcade shooter built on `showcase.c`. Shows `SHOWCASE/UFO.BMP` for 5 seconds at startup, then starts runs with 1 descending UFO on one of 4 color-coded patterns; each hit spawns 2 new UFOs (up to 256 active) until an enemy collides with the ship. **Arrows/WASD** or joystick move, **Space**/button 1 launches/fires, **P** pauses, **T** edits pilot name, **M**/**-/+** control audio, **F2/F3** save/load, **Esc** fades out to DOS text mode and prints `"Gracias por jugar!"`. |
+| `SHOWCASE.EXE` | `showcase.c` | Function-oriented SDL3 starter: 320×200 indexed display, palette fade, text/keyboard input, optional eight-way joystick, audio diagnostics and PCM effects, saved settings/high score, and a four-panel mini-shooter. **Arrows/WASD** move, **Space** fires, **T** edits the call sign, **F1** fades, **M** toggles music, **F2/F3** save/load settings, **-/+** adjusts volume, **Esc** exits; `/L` enables `SHOWCASE.LOG`. |
+| `SHOOTER.EXE` | `shooter.c` | Standalone full-screen 320×200 arcade shooter built on `showcase.c`. Shows `SHOWCASE/UFO.BMP` for 5 seconds at startup (**Esc** skips straight to the menu), then starts runs with 1 descending UFO on one of 4 color-coded patterns; each hit spawns 2 new UFOs (up to 256 active) until an enemy collides with the ship. **Arrows/WASD** or joystick move, **Space**/button 1 launches/fires, **P** pauses, **T** edits pilot name, **M**/**-/+** control audio, **F2/F3** save/load, **Esc** asks `"EXIT? Y / N"` during play, returns to the menu on Game Over, and from the main menu fades out to DOS text mode printing `"Gracias por jugar!"`; `/L` enables `SHOOTER.LOG`. |
 | `DINO.EXE` | `dinorun.c` | The runner attempts to dodge automatically; random agility can make its timing imprecise. Place a cactus with **Q** or a bird with **P**. Sprites default to half size (`/s 2`); `/h` shows help. **Space** starts/pauses and **Esc** exits. The Top 10 ranks shorter times first. |
 
 ## Screenshots
@@ -191,6 +191,8 @@ HELLO.EXE
 
 ```text
 SHOWCASE.EXE
+SHOWCASE.EXE /L
+SHOWCASE.EXE /H
 ```
 
 `SHOWCASE.EXE` requests the SDL3 DOS backend's 320×200 indexed display (Mode-13h-style; it does not issue BIOS interrupts), then ramps the RGB 3:3:2 palette from black to full color. Four panels show general state and a rainbow-text palette, audio/`BLASTER` diagnostics, keyboard/text/joystick input, and a black-background starfield shooter. The three Kenney sprites are indexed BMPs drawn at 1:4 size (28×19 ship, 23×23 UFO, 4×10 laser). Source OGG music/effects are supplied as 11025-Hz unsigned 8-bit mono WAVs; the DOS target uses SDL3 core audio and does not link SDL3_mixer. See [`SHOWCASE_GUIDE.md`](SHOWCASE_GUIDE.md) for why and for the supported SDL3_mixer alternative.
@@ -201,12 +203,13 @@ Controls: **arrows/WASD** move; **Space** or joystick button 1 fires; **T** star
 
 ```text
 SHOOTER.EXE
+SHOOTER.EXE /L
 SHOOTER.EXE /H
 ```
 
 `SHOOTER.EXE` adapts the `showcase.c` foundation into a full-screen 320×200 arcade game. At startup it displays the full-screen 320×200 indexed presentation screen `SHOWCASE/UFO.BMP` (`showcase-src/UFO.png`) for 5 seconds before transitioning to the title menu, and pre-bakes the six indexed gameplay sprites (`PLAYER~1.BMP`, `UFOBLUE.BMP`, `UFOYEL~1.BMP`, `UFORED.BMP`, `UFOGREEN.BMP`, and `LASERR~1.BMP`) at 1:4 size into compact contiguous buffers so the scanline blitter stays friendly to a 486 L1 cache even with hundreds of enemies on screen. Audio mixes the 11025-Hz mono PCM WAV effects using pure integer and 24.8 fixed-point math (no FPU required), the mouse cursor is hidden while running, and exiting via **Esc** fades the palette out, restores MS-DOS text mode (`SDL_Quit`), and prints `"Gracias por jugar!"` right before returning to the DOS prompt (`F1` manual fade is removed; `F2`/`F3` save/load `SHOOTER.CFG`).
 
-Each run starts with **1 UFO** descending from the top on one of four color-identified behaviors: **blue** = sinusoidal wave, **yellow** = timed diagonal zigzag, **red** = alternating fast swoop dives, and **green** = diagonal drift with course shifts. Destroying an enemy increments the score and immediately spawns **2 new descending UFOs** (`ENEMIES_PER_KILL = 2`, raising the simultaneous active pool up to `MAX_ENEMIES = 256`, plus an overflow queue). Enemies reaching the bottom wrap back to the top with a new random X position and behavior/color. Collisions check non-transparent pixels after fast vertical/bounding-box rejection; the run ends immediately when an enemy sprite impacts the player ship. Settings, records, and startup/summary logs are stored separately in `SHOOTER.CFG`, `SHOOTER.SCO`, and `SHOOTER.LOG` (ignored by Git, with zero per-frame disk I/O during gameplay).
+Each run starts with **1 UFO** descending from the top on one of four color-identified behaviors: **blue** = sinusoidal wave, **yellow** = timed diagonal zigzag, **red** = alternating fast swoop dives, and **green** = diagonal drift with course shifts. Destroying an enemy increments the score and immediately spawns **2 new descending UFOs** (`ENEMIES_PER_KILL = 2`, raising the simultaneous active pool up to `MAX_ENEMIES = 256`, plus an overflow queue). Enemies reaching the bottom wrap back to the top with a new random X position and behavior/color. Collisions check non-transparent pixels after fast vertical/bounding-box rejection; the run ends immediately when an enemy sprite impacts the player ship. Settings and records are stored in `SHOOTER.CFG` and `SHOOTER.SCO`; passing `/L` (or `/LOG`) enables optional startup/summary logging to `SHOOTER.LOG` (off by default, with zero per-frame disk I/O during gameplay, and ignored by Git).
 
 ### Dino Fall
 

@@ -58,6 +58,10 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/SHOWCASE"
      DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 
 # Keep the copied SHOWCASE asset folder up to date on incremental target builds.
+add_custom_command(TARGET showcase POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory
+            "${CMAKE_CURRENT_SOURCE_DIR}/SHOWCASE"
+            "${CMAKE_CURRENT_BINARY_DIR}/SHOWCASE")
 add_custom_command(TARGET shooter POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy_directory
             "${CMAKE_CURRENT_SOURCE_DIR}/SHOWCASE"

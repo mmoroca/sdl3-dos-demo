@@ -1,6 +1,11 @@
 MIT License
 
-Copyright (c) 2026 @mmoroca & Arena.AI
+Copyright (c) 2026 @mmoroca & Arena.AI (http://arena.ai/)
+
+Scope: this MIT grant covers the project's original code and documentation only.
+It does not grant new rights to the adapted art assets or to SDL3. See the
+README files, Images-src/README.md, and THIRD_PARTY_NOTICES.md for provenance
+and third-party licensing information.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

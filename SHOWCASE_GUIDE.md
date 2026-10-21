@@ -84,7 +84,7 @@ Only `ENGINE.WAV` is larger here, by 767 bytes; the other WAVs are smaller becau
 
 - `SHOWCASE.CFG` is plain text: `name`, `volume` (0–255), and `music` (0/1). It lives in the current working directory. The program loads it (or uses defaults) at startup, writes the initial values after video setup, and saves changes with Enter/F2.
 - `SHOWCASE.SCO` stores the best score and the call sign that achieved it. A new record is written immediately.
-- `SHOWCASE.LOG` records startup, devices/assets, and errors. These runtime files are ignored by Git.
+- `SHOWCASE.LOG` records startup, devices/assets, and errors when enabled with `/L` (off by default). These runtime files are ignored by Git.
 - The `SHOWCASE/` folder is copied beside the executable by CMake. Run from that directory or keep the folder beside `SHOWCASE.EXE`.
 - Audio hardware diagnostics show the SDL-selected driver/device and the `BLASTER` environment string. `BLASTER` is informational here; it is not a direct hardware probe.
 - The palette fades RGB colors only; sound volume is controlled separately by the software mixer.
@@ -172,7 +172,7 @@ Aquí solo `ENGINE.WAV` ocupa más (767 bytes); los demás WAV son más pequeño
 
 - `SHOWCASE.CFG` es texto plano: `name`, `volume` (0–255) y `music` (0/1). Se guarda en el directorio actual. Al iniciar se carga el archivo (o se usan valores predeterminados); tras preparar el vídeo se escriben los valores iniciales, y Enter/F2 guarda los cambios.
 - `SHOWCASE.SCO` guarda el récord y el nombre que lo consiguió. Un nuevo récord se escribe inmediatamente.
-- `SHOWCASE.LOG` registra el inicio, dispositivos/recursos y errores. Git ignora estos archivos de ejecución.
+- `SHOWCASE.LOG` registra el inicio, dispositivos/recursos y errores cuando se activa con `/L` (desactivado por defecto). Git ignora estos archivos de ejecución.
 - CMake copia la carpeta `SHOWCASE/` junto al ejecutable. Ejecuta desde esa carpeta o conserva `SHOWCASE/` al lado de `SHOWCASE.EXE`.
 - El diagnóstico de audio muestra el controlador/dispositivo elegido por SDL y la cadena de entorno `BLASTER`. Aquí `BLASTER` es informativa, no una prueba directa del hardware.
 - El fundido modifica los colores de la paleta; el volumen se controla por separado en el mezclador por software.
