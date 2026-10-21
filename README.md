@@ -14,6 +14,8 @@ A set of small C programs for MS-DOS, built with DJGPP and the SDL3 DOS backend.
 | `MISTIFY.EXE` | `mistify.c` | Animated quadrilaterals with a 256-color palette and fading trails. Defaults: 48 trail frames, 2 polygons, normal speed. Any key or mouse movement exits. `/L` enables `MISTIFY.LOG`. |
 | `SBTEST.EXE` | `soundtest.c` | Plays an original generated melody as 11025 Hz, unsigned 8-bit mono PCM and shows audio/device diagnostics. **Esc** exits; `/L` enables `SBTEST.LOG`. |
 | `MODPLAY.EXE` | `modplay.c` | Plays bounded ProTracker modules (31 samples, 4 channels). Default output: 22050 Hz, 8-bit, mono. **Space** pauses/resumes and **Esc** exits. |
+| `SHOWCASE.EXE` | `showcase.c` | Function-oriented SDL3 starter: 320×200 indexed display, palette fade, text/keyboard input, optional eight-way joystick, audio diagnostics and PCM effects, saved settings/high score, and a four-panel mini-shooter. **Arrows/WASD** move, **Space** fires, **T** edits the call sign, **F1** fades, **M** toggles music, **F2/F3** save/load settings, **-/+** adjusts volume, **Esc** exits. |
+| `SHOOTER.EXE` | `shooter.c` | Standalone full-screen 320×200 arcade shooter built on `showcase.c`. Shows `SHOWCASE/UFO.BMP` for 5 seconds at startup, then starts runs with 1 descending UFO on one of 4 color-coded patterns; each hit spawns 2 new UFOs (up to 256 active) until an enemy collides with the ship. **Arrows/WASD** or joystick move, **Space**/button 1 launches/fires, **P** pauses, **T** edits pilot name, **M**/**-/+** control audio, **F2/F3** save/load, **Esc** fades out to DOS text mode and prints `"Gracias por jugar!"`. |
 | `DINO.EXE` | `dinorun.c` | The runner attempts to dodge automatically; random agility can make its timing imprecise. Place a cactus with **Q** or a bird with **P**. Sprites default to half size (`/s 2`); `/h` shows help. **Space** starts/pauses and **Esc** exits. The Top 10 ranks shorter times first. |
 
 ## Screenshots
@@ -26,11 +28,13 @@ A set of small C programs for MS-DOS, built with DJGPP and the SDL3 DOS backend.
 | `MODPLAY.EXE` | ![MODPLAY.EXE playing a module in DOSBox-X](docs/modplay.png) |
 | `DINO.EXE` | ![DINO.EXE running in DOSBox-X](docs/dino.png) |
 
-The graphics examples request 320×200 indexed-color surfaces where supported. Mistify renders with a 256-color palette; Dino Fall uses a shared grayscale palette and transparent key. All five programs use SDL software surfaces; the DOS backend uses VGA/VESA and does not require OpenGL or GPU acceleration. In-program text and command-line help are in English.
+Screenshots for `SHOWCASE.EXE` and `SHOOTER.EXE` are intentionally omitted until real DOS/DOSBox captures are uploaded.
+
+The graphics examples request 320×200 indexed-color surfaces where supported. Mistify renders with a 256-color palette; Dino Fall uses a shared grayscale palette and transparent key; Showcase and Shooter use the same RGB 3:3:2 palette as the converted sprite BMPs. All seven programs use SDL software surfaces; the DOS backend uses VGA/VESA and does not require OpenGL or GPU acceleration. In-program text and command-line help are in English.
 
 ## Source organization
 
-Each C file is organized into visible sections for configuration, state, initialization, input, the main loop, and cleanup. `dinorun.c` documents its state, resource ownership, timing/physics, randomized maneuver logic, collision-mask math, rendering, and event flow. `tools/convert_assets.py` is a project-neutral PNG-to-BMP utility, and `trimexe.sh` creates stripped executable copies while leaving the originals intact. Resources are released safely after partial initialization failures; there are no `goto` statements.
+Each C file is organized into visible sections for configuration, state, initialization, input, the main loop, and cleanup. `dinorun.c` documents its state, resource ownership, timing/physics, randomized maneuver logic, collision-mask math, rendering, and event flow. `showcase.c` is the function-oriented starter template: display/palette, text drawing, input, joystick, audio, files, shooter update/render, main loop, and cleanup are separate functions. `shooter.c` turns that template into a standalone full-screen arcade game using pure integer/fixed-point motion and pixel-accurate sprite collision. See [`SHOWCASE_GUIDE.md`](SHOWCASE_GUIDE.md) for the bilingual function map and extension notes. `tools/convert_assets.py` remains project-neutral; `trimexe.sh` creates stripped executable copies while leaving the originals intact. Resources are released safely after partial initialization failures; there are no `goto` statements.
 
 ## Requirements
 
@@ -124,7 +128,7 @@ cmake -S "$DEMO_DIR" -B "$DEMO_DIR/build-dos" \
 cmake --build "$DEMO_DIR/build-dos" --parallel
 ```
 
-The toolchain file is named `i586-pc-msdosdjgpp.cmake`; the compiler is explicitly set to `i386-pc-msdosdjgpp-gcc`. CMake creates `hello.exe`, `mistify.exe`, `sbtest.exe`, `modplay.exe`, and `dino.exe` in the selected build directory. If changing compiler or toolchain after configuration, use a fresh build directory so CMake does not reuse the old cache.
+The toolchain file is named `i586-pc-msdosdjgpp.cmake`; the compiler is explicitly set to `i386-pc-msdosdjgpp-gcc`. CMake creates `hello.exe`, `mistify.exe`, `sbtest.exe`, `modplay.exe`, `showcase.exe`, `shooter.exe`, and `dino.exe` in the selected build directory. The `SHOWCASE/` runtime assets are copied beside the executables for both `showcase.exe` and `shooter.exe`. If changing compiler or toolchain after configuration, use a fresh build directory so CMake does not reuse the old cache.
 
 ### Release build optimized for size
 
@@ -182,6 +186,27 @@ DJGPP creates 32-bit DPMI executables. Provide a compatible DPMI host, such as `
 C:
 HELLO.EXE
 ```
+
+### Systems Showcase template
+
+```text
+SHOWCASE.EXE
+```
+
+`SHOWCASE.EXE` requests the SDL3 DOS backend's 320×200 indexed display (Mode-13h-style; it does not issue BIOS interrupts), then ramps the RGB 3:3:2 palette from black to full color. Four panels show general state and a rainbow-text palette, audio/`BLASTER` diagnostics, keyboard/text/joystick input, and a black-background starfield shooter. The three Kenney sprites are indexed BMPs drawn at 1:4 size (28×19 ship, 23×23 UFO, 4×10 laser). Source OGG music/effects are supplied as 11025-Hz unsigned 8-bit mono WAVs; the DOS target uses SDL3 core audio and does not link SDL3_mixer. See [`SHOWCASE_GUIDE.md`](SHOWCASE_GUIDE.md) for why and for the supported SDL3_mixer alternative.
+
+Controls: **arrows/WASD** move; **Space** or joystick button 1 fires; **T** starts call-sign text entry, **Backspace** edits, and **Enter** saves it; **F1** toggles the palette fade; **M** toggles music; **F2/F3** save/load `SHOWCASE.CFG`; **-/+** adjust master volume; **Esc** exits with a palette fade-out. The engine clip is mixed at exactly half the master volume. A new best shooter score is written immediately to `SHOWCASE.SCO`. Both files are plain-text runtime data in the current directory and are ignored by Git. A joystick is optional; without one, the display reports its absence and the keyboard remains usable. See [`SHOWCASE_GUIDE.md`](SHOWCASE_GUIDE.md) for the function-by-function overview and asset conversion details.
+
+### Arcade Shooter
+
+```text
+SHOOTER.EXE
+SHOOTER.EXE /H
+```
+
+`SHOOTER.EXE` adapts the `showcase.c` foundation into a full-screen 320×200 arcade game. At startup it displays the full-screen 320×200 indexed presentation screen `SHOWCASE/UFO.BMP` (`showcase-src/UFO.png`) for 5 seconds before transitioning to the title menu, and pre-bakes the six indexed gameplay sprites (`PLAYER~1.BMP`, `UFOBLUE.BMP`, `UFOYEL~1.BMP`, `UFORED.BMP`, `UFOGREEN.BMP`, and `LASERR~1.BMP`) at 1:4 size into compact contiguous buffers so the scanline blitter stays friendly to a 486 L1 cache even with hundreds of enemies on screen. Audio mixes the 11025-Hz mono PCM WAV effects using pure integer and 24.8 fixed-point math (no FPU required), the mouse cursor is hidden while running, and exiting via **Esc** fades the palette out, restores MS-DOS text mode (`SDL_Quit`), and prints `"Gracias por jugar!"` right before returning to the DOS prompt (`F1` manual fade is removed; `F2`/`F3` save/load `SHOOTER.CFG`).
+
+Each run starts with **1 UFO** descending from the top on one of four color-identified behaviors: **blue** = sinusoidal wave, **yellow** = timed diagonal zigzag, **red** = alternating fast swoop dives, and **green** = diagonal drift with course shifts. Destroying an enemy increments the score and immediately spawns **2 new descending UFOs** (`ENEMIES_PER_KILL = 2`, raising the simultaneous active pool up to `MAX_ENEMIES = 256`, plus an overflow queue). Enemies reaching the bottom wrap back to the top with a new random X position and behavior/color. Collisions check non-transparent pixels after fast vertical/bounding-box rejection; the run ends immediately when an enemy sprite impacts the player ship. Settings, records, and startup/summary logs are stored separately in `SHOOTER.CFG`, `SHOOTER.SCO`, and `SHOOTER.LOG` (ignored by Git, with zero per-frame disk I/O during gameplay).
 
 ### Dino Fall
 
@@ -244,7 +269,7 @@ The player mixes four PCM voices and supports common ProTracker effects, includi
 
 ## License and third-party software
 
-The project-authored code and documentation are licensed under MIT; see [`LICENSE`](LICENSE). That code license does not cover the PNG/BMP artwork: the project owner prepared image adaptations for this project, and the referenced source collection did not publish a separate asset license when checked. See [`Images-src/README.md`](Images-src/README.md) for context before redistributing the artwork separately. SDL3 is an external Git submodule and remains under its upstream zlib license; its source is not vendored. See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) and SDL's `LICENSE.txt`.
+The project-authored code and documentation are licensed under MIT; see [`LICENSE`](LICENSE). That grant does not cover third-party assets. The existing Dino Fall artwork has its own provenance note in [`Images-src/README.md`](Images-src/README.md). The new Showcase sprites and source OGG tracks are from Kenney's *Space Shooter Remastered (1.0)* and are CC0 1.0; converted BMP/WAV runtime files are derivatives of those assets. See [`showcase-src/README.md`](showcase-src/README.md) and [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). SDL3 is an external Git submodule and remains under its upstream zlib license; its source is not vendored, and its `LICENSE.txt` remains authoritative.
 
 ## References
 

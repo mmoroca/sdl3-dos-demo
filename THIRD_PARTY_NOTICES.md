@@ -27,3 +27,24 @@ freely, subject to the following restrictions:
 ```
 
 Official SDL licensing information: <https://www.libsdl.org/license.php>. When distributing SDL source, preserve the license notice that comes with that SDL revision. SDL and this project remain separately licensed components even when linked into the same executable.
+
+## Kenney — Space Shooter Remastered (1.0)
+
+The six Showcase/Shooter sprites and four source sound files below are from **Space Shooter Remastered (1.0)**, created/distributed by Kenney (<https://www.kenney.nl/>):
+
+- `showcase-src/playerShip2_blue.png`
+- `showcase-src/ufoBlue.png`
+- `showcase-src/ufoGreen.png`
+- `showcase-src/ufoRed.png`
+- `showcase-src/ufoYellow.png`
+- `showcase-src/laserRed02.png`
+- `docs/Space Cadet.ogg`
+- `docs/laser2.ogg`
+- `docs/explosion4.ogg`
+- `docs/engine5.ogg`
+
+The collection is released under **Creative Commons Zero v1.0 Universal (CC0 1.0)**: <https://creativecommons.org/publicdomain/zero/1.0/>. It is free to use in personal, educational, and commercial projects. Crediting Kenney is appreciated but not required; this project includes the attribution voluntarily. `showcase-src/UFO.png` (`SHOWCASE/UFO.BMP`) is a 320×200 presentation screen composed from those CC0 sprites by `@mmoroca 2026`. Converted 8-bit indexed BMPs and U8 mono PCM WAVs in `SHOWCASE/` are runtime derivatives of these assets, not MIT-licensed third-party artwork.
+
+### Aviso en español
+
+Los seis sprites compartidos por Showcase y Shooter y los cuatro OGG fuente indicados arriba pertenecen a **Space Shooter Remastered (1.0)**, creado/distribuido por Kenney (<https://www.kenney.nl/>), bajo **Creative Commons Zero v1.0 Universal (CC0 1.0)**: <https://creativecommons.org/publicdomain/zero/1.0/>. Se pueden usar en proyectos personales, educativos y comerciales. La atribución es opcional; este proyecto acredita a Kenney de forma voluntaria. `showcase-src/UFO.png` (`SHOWCASE/UFO.BMP`) es una pantalla de presentación de 320×200 compuesta con esos sprites CC0 por `@mmoroca 2026`. Los BMP indexados y WAV PCM mono de `SHOWCASE/` son conversiones de ejecución de estos recursos y no re-licencian obra de terceros bajo MIT.

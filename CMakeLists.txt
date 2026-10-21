@@ -35,3 +35,30 @@ target_link_libraries(sbtest PRIVATE SDL3::SDL3)
 
 add_executable(modplay modplay.c)
 target_link_libraries(modplay PRIVATE SDL3::SDL3)
+
+# Mode-13h-style, four-panel SDL3 reference template (8.3 executable name).
+add_executable(showcase showcase.c)
+target_link_libraries(showcase PRIVATE SDL3::SDL3)
+
+# Full-screen 320x200 arcade shooter built on the Showcase template (8.3 name).
+add_executable(shooter shooter.c)
+target_link_libraries(shooter PRIVATE SDL3::SDL3)
+
+# Short DOS 8.3 executable name for the obstacle-placement game.
+add_executable(dino dinorun.c)
+target_link_libraries(dino PRIVATE SDL3::SDL3)
+
+# Ship the preconverted 8-bit grayscale sprites beside DINO.EXE. The program
+# opens them by relative path, which also works from a DOSBox-mounted build dir.
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/Images"
+     DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+
+# SHOWCASE.EXE and SHOOTER.EXE open indexed BMP sprites and PCM WAVs here.
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/SHOWCASE"
+     DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+
+# Keep the copied SHOWCASE asset folder up to date on incremental target builds.
+add_custom_command(TARGET shooter POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory
+            "${CMAKE_CURRENT_SOURCE_DIR}/SHOWCASE"
+            "${CMAKE_CURRENT_BINARY_DIR}/SHOWCASE")

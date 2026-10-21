@@ -14,6 +14,8 @@ Conjunto de pequeños programas en C para MS-DOS, compilados con DJGPP y el back
 | `MISTIFY.EXE` | `mistify.c` | Cuadriláteros animados con paleta de 256 colores y estelas degradadas. Valores predeterminados: 48 fotogramas de estela, 2 polígonos y velocidad normal. Sale al pulsar cualquier tecla o mover el ratón. `/L` activa `MISTIFY.LOG`. |
 | `SBTEST.EXE` | `soundtest.c` | Reproduce una melodía original generada como PCM mono sin signo de 8 bits a 11025 Hz y muestra diagnósticos de audio/dispositivo. **Esc** sale; `/L` activa `SBTEST.LOG`. |
 | `MODPLAY.EXE` | `modplay.c` | Reproduce módulos ProTracker dentro de estos límites: 31 muestras y 4 canales. Salida predeterminada: 22050 Hz, 8 bits, mono. **Space** pausa/reanuda y **Esc** sale. |
+| `SHOWCASE.EXE` | `showcase.c` | Plantilla SDL3 organizada en funciones: pantalla indexada 320×200, fundido de paleta, entrada de texto/teclado, joystick opcional de ocho direcciones, diagnóstico y efectos de audio PCM, configuración/récord guardados y mini shooter en cuatro paneles. **Flechas/WASD** mueven, **Space** dispara, **T** edita el nombre, **F1** aplica el fundido, **M** activa/desactiva la música, **F2/F3** guardan/cargan ajustes, **-/+** cambia el volumen y **Esc** sale. |
+| `SHOOTER.EXE` | `shooter.c` | Shooter arcade independiente a pantalla completa (320×200) basado en `showcase.c`. Muestra `SHOWCASE/UFO.BMP` durante 5 s al inicio y empieza la partida con 1 UFO en uno de 4 patrones identificados por color; cada baja genera 2 UFO nuevos (hasta 256 simultáneos) hasta chocar con la nave. **Flechas/WASD** o joystick mueven, **Space**/botón 1 inicia/dispara, **P** pausa, **T** edita el nombre, **M**/**-/+** ajustan el audio, **F2/F3** guardan/cargan y **Esc** sale con fundido e imprime `"Gracias por jugar!"` en modo texto DOS. |
 | `DINO.EXE` | `dinorun.c` | El corredor intenta esquivar automáticamente; la agilidad aleatoria puede hacer que falle el momento. Coloca un cactus con **Q** o un pájaro con **P**. Los sprites se muestran por defecto a media escala (`/s 2`); `/h` muestra la ayuda. **Space** inicia/pausa y **Esc** sale. El Top 10 ordena primero los tiempos más cortos. |
 
 ## Capturas de pantalla
@@ -26,11 +28,13 @@ Conjunto de pequeños programas en C para MS-DOS, compilados con DJGPP y el back
 | `MODPLAY.EXE` | ![MODPLAY.EXE reproduciendo un módulo en DOSBox-X](docs/modplay.png) |
 | `DINO.EXE` | ![DINO.EXE ejecutándose en DOSBox-X](docs/dino.png) |
 
-Los ejemplos gráficos solicitan superficies indexadas de 320×200 cuando están disponibles. Mistify dibuja con una paleta de 256 colores; Dino Fall usa una paleta compartida de grises y una clave de transparencia. Los cinco programas usan superficies SDL por software; el backend DOS utiliza VGA/VESA y no necesita OpenGL ni aceleración de GPU. Los textos y la ayuda visibles dentro de los programas están en inglés.
+No se enlazan capturas de `SHOWCASE.EXE` ni de `SHOOTER.EXE` hasta subir capturas reales tomadas en DOS o DOSBox.
+
+Los ejemplos gráficos solicitan superficies indexadas de 320×200 cuando están disponibles. Mistify dibuja con una paleta de 256 colores; Dino Fall usa una paleta compartida de grises y una clave de transparencia; Showcase y Shooter usan la misma paleta RGB 3:3:2 que los BMP convertidos de los sprites. Los siete programas usan superficies SDL por software; el backend DOS utiliza VGA/VESA y no necesita OpenGL ni aceleración de GPU. Los textos y la ayuda visibles dentro de los programas están en inglés.
 
 ## Organización del código
 
-Cada archivo C está organizado en secciones visibles para la configuración, el estado, la inicialización, la entrada, el bucle principal y la limpieza. `dinorun.c` documenta el estado, la propiedad de los recursos, los tiempos/física, la maniobra aleatoria, las máscaras de colisión, el dibujo y el flujo de eventos. `tools/convert_assets.py` es una utilidad PNG→BMP genérica, y `trimexe.sh` crea copias de ejecutables sin modificar los originales. Los recursos se liberan de forma segura aunque falle una etapa de inicialización; no se usan sentencias `goto`.
+Cada archivo C está organizado en secciones visibles para la configuración, el estado, la inicialización, la entrada, el bucle principal y la limpieza. `dinorun.c` documenta el estado, la propiedad de los recursos, los tiempos/física, la maniobra aleatoria, las máscaras de colisión, el dibujo y el flujo de eventos. `showcase.c` es la plantilla funcional: separa pantalla/paleta, dibujo de texto, teclado, joystick, audio, ficheros, actualización/dibujo del shooter, bucle principal y limpieza. `shooter.c` convierte esa base en un juego arcade independiente a pantalla completa usando aritmética entera/en coma fija y colisión precisa por píxel opaco. Consulta [`SHOWCASE_GUIDE.md`](SHOWCASE_GUIDE.md) para el mapa bilingüe de funciones y sugerencias de extensión. `tools/convert_assets.py` sigue siendo genérico; `trimexe.sh` crea copias reducidas sin modificar los originales. Los recursos se liberan de forma segura aunque falle una etapa de inicialización; no se usan sentencias `goto`.
 
 ## Requisitos
 
@@ -124,7 +128,7 @@ cmake -S "$DEMO_DIR" -B "$DEMO_DIR/build-dos" \
 cmake --build "$DEMO_DIR/build-dos" --parallel
 ```
 
-El archivo de toolchain se llama `i586-pc-msdosdjgpp.cmake`; el compilador se indica explícitamente como `i386-pc-msdosdjgpp-gcc`. CMake genera `hello.exe`, `mistify.exe`, `sbtest.exe`, `modplay.exe` y `dino.exe` dentro del directorio de compilación elegido. Si cambias de compilador o toolchain después de configurar, usa un directorio de compilación nuevo para que CMake no reutilice la caché anterior.
+El archivo de toolchain se llama `i586-pc-msdosdjgpp.cmake`; el compilador se indica explícitamente como `i386-pc-msdosdjgpp-gcc`. CMake genera `hello.exe`, `mistify.exe`, `sbtest.exe`, `modplay.exe`, `showcase.exe`, `shooter.exe` y `dino.exe` dentro del directorio de compilación elegido. También copia la carpeta de recursos `SHOWCASE/` junto a los ejecutables para `showcase.exe` y `shooter.exe`. Si cambias de compilador o toolchain después de configurar, usa un directorio de compilación nuevo para que CMake no reutilice la caché anterior.
 
 ### Compilación Release optimizada para tamaño
 
@@ -182,6 +186,27 @@ DJGPP genera ejecutables DPMI de 32 bits. Proporciona un host DPMI compatible, c
 C:
 HELLO.EXE
 ```
+
+### Plantilla Systems Showcase
+
+```text
+SHOWCASE.EXE
+```
+
+`SHOWCASE.EXE` solicita al backend DOS de SDL3 una pantalla indexada de 320×200 (estilo Modo 13h; no ejecuta interrupciones BIOS) y aumenta gradualmente la paleta RGB 3:3:2 desde negro hasta el brillo completo. Cuatro paneles muestran el estado general y texto multicolor, diagnósticos de audio/`BLASTER`, entrada de teclado/texto/joystick y un shooter con estrellas sobre fondo negro. Los tres sprites de Kenney son BMP indexados dibujados a escala 1:4 (nave 28×19, UFO 23×23, láser 4×10). La música y los efectos OGG originales se suministran como WAV mono sin signo de 8 bits a 11025 Hz; el objetivo DOS usa el audio del SDL3 básico y no enlaza SDL3_mixer. Consulta [`SHOWCASE_GUIDE.md`](SHOWCASE_GUIDE.md) para la justificación y la alternativa con SDL3_mixer.
+
+Controles: **flechas/WASD** mueven; **Space** o el botón 1 del joystick dispara; **T** inicia la escritura del nombre, **Backspace** borra y **Enter** lo guarda; **F1** activa/desactiva el fundido; **M** activa/desactiva la música; **F2/F3** guardan/cargan `SHOWCASE.CFG`; **-/+** cambia el volumen general; **Esc** sale con fundido de paleta. El clip del motor se mezcla exactamente al 50 % del volumen general. Un nuevo récord del shooter se guarda inmediatamente en `SHOWCASE.SCO`. Ambos son archivos de datos de texto del directorio actual e ignorados por Git. El joystick es opcional: si no hay uno, se indica en pantalla y el teclado sigue funcionando. Consulta [`SHOWCASE_GUIDE.md`](SHOWCASE_GUIDE.md) para el mapa de funciones y la conversión de recursos.
+
+### Arcade Shooter
+
+```text
+SHOOTER.EXE
+SHOOTER.EXE /H
+```
+
+`SHOOTER.EXE` convierte la base de `showcase.c` en un shooter arcade independiente a pantalla completa (320×200). Al arrancar muestra durante 5 segundos la pantalla de presentación indexada a tamaño completo `SHOWCASE/UFO.BMP` (`showcase-src/UFO.png`) antes de pasar al menú de título, y pre-escala a 1:4 los seis BMP de juego (`PLAYER~1.BMP`, `UFOBLUE.BMP`, `UFOYEL~1.BMP`, `UFORED.BMP`, `UFOGREEN.BMP` y `LASERR~1.BMP`) en búferes contiguos compactos para aprovechar la caché L1 de un 486 incluso con cientos de enemigos en pantalla. Mezcla los WAV PCM mono a 11025 Hz usando exclusivamente aritmética entera y en coma fija 24.8 (sin requerir FPU), mantiene oculto el puntero del ratón y, al pulsar **Esc**, funde la paleta a negro, restaura el modo texto MS-DOS (`SDL_Quit`) e imprime `"Gracias por jugar!"` justo antes del prompt de MS-DOS (se elimina el fundido manual con `F1`; `F2`/`F3` guardan/cargan `SHOOTER.CFG`).
+
+Cada partida comienza con **1 UFO** descendiendo desde arriba con uno de cuatro comportamientos identificables por su color: **azul** = onda sinusoidal, **amarillo** = zigzag diagonal temporizado, **rojo** = picado rápido alternado y **verde** = deriva diagonal con cambios de rumbo. Al destruir un enemigo se suma un punto y aparecen inmediatamente **2 UFO nuevos** (`ENEMIES_PER_KILL = 2`, con hasta `MAX_ENEMIES = 256` enemigos activos simultáneos más cola de reserva). Los enemigos que alcanzan el borde inferior reaparecen arriba con nueva posición X y comportamiento/color aleatorio. Las colisiones comprueban píxeles opacos tras un descarte rápido de cajas; la partida termina de inmediato cuando algún sprite enemigo impacta con la nave del jugador. Los ajustes, récords y registros se guardan por separado en `SHOOTER.CFG`, `SHOOTER.SCO` y `SHOOTER.LOG` (ignorados por Git, sin escritura en disco por fotograma).
 
 ### Dino Fall
 
@@ -244,7 +269,7 @@ El reproductor mezcla cuatro voces PCM y admite efectos comunes de ProTracker, c
 
 ## Licencia y software de terceros
 
-El código y la documentación propios del proyecto se distribuyen bajo MIT; consulta [`LICENSE`](LICENSE). Esa licencia de código no cubre los gráficos PNG/BMP: el propietario preparó adaptaciones para este proyecto y la colección de referencia no publicaba una licencia independiente para los assets cuando se comprobó. Consulta [`Images-src/README.md`](Images-src/README.md) antes de redistribuir los gráficos por separado. SDL3 es un submódulo Git externo y conserva la licencia upstream zlib; su código fuente no está vendorizado. Consulta [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) y el archivo `LICENSE.txt` de SDL.
+El código y la documentación propios del proyecto se distribuyen bajo MIT; consulta [`LICENSE`](LICENSE). Esa licencia no cubre recursos de terceros. Los gráficos existentes de Dino Fall conservan su nota de procedencia en [`Images-src/README.md`](Images-src/README.md). Los nuevos sprites y OGG fuente de Showcase proceden de *Space Shooter Remastered (1.0)*, de Kenney, y están bajo CC0 1.0; los BMP/WAV de ejecución son derivados convertidos de esos recursos. Consulta [`showcase-src/README.md`](showcase-src/README.md) y [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). SDL3 es un submódulo Git externo que conserva la licencia upstream zlib; su código fuente no está vendorizado y el `LICENSE.txt` incluido en SDL sigue siendo la referencia autoritativa.
 
 ## Referencias
 
