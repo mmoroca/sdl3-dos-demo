@@ -27,8 +27,8 @@ Conjunto de pequeños programas en C para MS-DOS, compilados con DJGPP y el back
 | `SBTEST.EXE` | ![Diagnóstico de SBTEST.EXE en DOSBox-X](docs/sbtest.png) |
 | `MODPLAY.EXE` | ![MODPLAY.EXE reproduciendo un módulo en DOSBox-X](docs/modplay.png) |
 | `DINO.EXE` | ![DINO.EXE ejecutándose en DOSBox-X](docs/dino.png) |
-
-No se enlazan capturas de `SHOWCASE.EXE` ni de `SHOOTER.EXE` hasta subir capturas reales tomadas en DOS o DOSBox.
+| `SHOWCASE.EXE` | ![SHOWCASE.EXE running in DOSBox-X](docs/showcase.png) |
+| `SHOOTER.EXE` | ![SHOOTER.EXE running in DOSBox-X](docs/shooter.png) |
 
 Los ejemplos gráficos solicitan superficies indexadas de 320×200 cuando están disponibles. Mistify dibuja con una paleta de 256 colores; Dino Fall usa una paleta compartida de grises y una clave de transparencia; Showcase y Shooter usan la misma paleta RGB 3:3:2 que los BMP convertidos de los sprites. Los siete programas usan superficies SDL por software; el backend DOS utiliza VGA/VESA y no necesita OpenGL ni aceleración de GPU. Los textos y la ayuda visibles dentro de los programas están en inglés.
 
