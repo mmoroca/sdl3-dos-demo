@@ -21,14 +21,26 @@ build.ninja
 .ninja_log
 Testing/
 
-# Compiled DOS programs and intermediate objects/libraries.
+# Compiled DOS programs, DPMI swap files, and intermediate objects/libraries.
 *.exe
+*.EXE
+*.swp
+*.SWP
 *.o
 *.obj
 *.a
 *.lib
 
-# Runtime logs and host OS metadata.
+# Runtime records, logs, and host OS metadata.
+DINO.SCO
+SHOWCASE.CFG
+SHOWCASE.SCO
+SHOWCASE.LOG
+SHOOTER.CFG
+SHOOTER.SCO
+SHOOTER.LOG
+FONTDEMO.LOG
 *.log
+*.LOG
 .DS_Store
 Thumbs.db
