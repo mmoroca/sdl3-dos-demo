@@ -4,6 +4,9 @@
 
 ## English
 
+> [!TIP]
+> **Targeting a real `80386` / `386SX` (`2 MB` RAM, No-FPU) machine?** See the companion repository **[`mmoroca/sdl3-dos-386`](https://github.com/mmoroca/sdl3-dos-386)** for a drop-in `80386` compatibility layer (`dos_compat.c`), pre-baked 1:4 RLE spans, hardware audio pre-probing before `WAV` allocation (zero `CWSDPMI.SWP` swap on `2 MB` PCs), and `CONFIG.SYS` / `AUTOEXEC.BAT` tuning instructions.
+
 ### Purpose and layout
 
 `showcase.c` is a single-file, function-oriented SDL3/DOS starter example. It demonstrates reusable display, palette, drawing, keyboard/text, optional joystick, audio, and file-I/O patterns. Its mini-shooter is only sample application behavior: replace `initialize_game()`, `update_shooter()`, and `draw_shooter_panel()` with the logic and presentation for your own program (see `shooter.c` / `SHOOTER.EXE` for a standalone full-screen arcade game built directly from this template).
@@ -91,6 +94,9 @@ Only `ENGINE.WAV` is larger here, by 767 bytes; the other WAVs are smaller becau
 - The CC0 sprite/sound assets are not relicensed under the repository's MIT code license. Attribution and license details are in `showcase-src/README.md` and `THIRD_PARTY_NOTICES.md`.
 
 ## Español
+
+> [!TIP]
+> **¿Apuntas a un `80386` / `386SX` real (`2 MB` de RAM, sin FPU)?** Consulta el repositorio hermano **[`mmoroca/sdl3-dos-386`](https://github.com/mmoroca/sdl3-dos-386)** con la capa reutilizable `dos_compat.c`, tramos opacos RLE 1:4 pre-cocinados, sondeo previo de hardware de audio antes de cargar `WAV` (cero paginación `CWSDPMI.SWP` en equipos de `2 MB`) y guía de optimización de `CONFIG.SYS` / `AUTOEXEC.BAT`.
 
 ### Objetivo y diseño
 

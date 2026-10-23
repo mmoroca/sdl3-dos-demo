@@ -4,18 +4,22 @@
 
 **by @mmoroca & [Arena.AI](http://arena.ai/) 2026**
 
+> [!TIP]
+> **¿Usas un `80386` / `386SX` / `486SX` real con solo `2 MB` de RAM o sin coprocesador FPU?** Visita el repositorio hermano **[`mmoroca/sdl3-dos-386`](https://github.com/mmoroca/sdl3-dos-386)** — validado en un **ADL Computers Terminator 386 (`80386SX`, `2 MB` de RAM, sin `80387`)** con **cero paginación `CWSDPMI.SWP`**, ejecutables `.EXE` reducidos (`~508–574 KB`), capa reutilizable `dos_compat.c`, guía de ajuste de `CONFIG.SYS` / `AUTOEXEC.BAT` y manual completo de optimización para `386`.
+
 Conjunto de pequeños programas en C para MS-DOS, compilados con DJGPP y el backend DOS de SDL3. SDL3 se referencia como submódulo Git fijado a un commit upstream; su código fuente permanece en el proyecto SDL y no se copia dentro de este repositorio.
 
 ## Programas incluidos
 
 | Ejecutable | Fuente | Descripción y controles |
 |---|---|---|
-| `HELLO.EXE` | `main.c` | Ejemplo mínimo de superficie SDL a 320×200. Dibuja un rectángulo de color y sale con **Esc** o al cerrar la ventana. Escribe `HELLO.LOG` en el directorio actual si se puede escribir en él. |
+| `HELLO.EXE` | `main.c` | Ejemplo mínimo de superficie SDL a 320×200. Dibuja un rectángulo de color y sale con **Esc** o al cerrar la ventana; `/L` activa opcionalmente `HELLO.LOG`. |
+| `FONTDEMO.EXE` | `fontdemo.c` | Muestra comparativa en 320×200 de las cuatro fuentes bitmap en cabeceras C (`font_3x5.h`, `font_5x7.h`, `nueva_font_5x7.h` y `font_8x8.h`). **Esc** sale. |
 | `MISTIFY.EXE` | `mistify.c` | Cuadriláteros animados con paleta de 256 colores y estelas degradadas. Valores predeterminados: 48 fotogramas de estela, 2 polígonos y velocidad normal. Sale al pulsar cualquier tecla o mover el ratón. `/L` activa `MISTIFY.LOG`. |
 | `SBTEST.EXE` | `soundtest.c` | Reproduce una melodía original generada como PCM mono sin signo de 8 bits a 11025 Hz y muestra diagnósticos de audio/dispositivo. **Esc** sale; `/L` activa `SBTEST.LOG`. |
 | `MODPLAY.EXE` | `modplay.c` | Reproduce módulos ProTracker dentro de estos límites: 31 muestras y 4 canales. Salida predeterminada: 22050 Hz, 8 bits, mono. **Space** pausa/reanuda y **Esc** sale. |
 | `SHOWCASE.EXE` | `showcase.c` | Plantilla SDL3 organizada en funciones: pantalla indexada 320×200, fundido de paleta, entrada de texto/teclado, joystick opcional de ocho direcciones, diagnóstico y efectos de audio PCM, configuración/récord guardados y mini shooter en cuatro paneles. **Flechas/WASD** mueven, **Space** dispara, **T** edita el nombre, **F1** aplica el fundido, **M** activa/desactiva la música, **F2/F3** guardan/cargan ajustes, **-/+** cambia el volumen y **Esc** sale; `/L` activa `SHOWCASE.LOG`. |
-| `SHOOTER.EXE` | `shooter.c` | Shooter arcade independiente a pantalla completa (320×200) basado en `showcase.c`. Muestra `SHOWCASE/UFO.BMP` durante 5 s al inicio (**Esc** salta directamente al menú) y empieza la partida con 1 UFO en uno de 4 patrones identificados por color; cada baja genera 2 UFO nuevos (hasta 256 simultáneos) hasta chocar con la nave. **Flechas/WASD** o joystick mueven, **Space**/botón 1 inicia/dispara, **P** pausa, **T** edita el nombre, **M**/**-/+** ajustan el audio, **F2/F3** guardan/cargan y **Esc** pide confirmación `"EXIT? Y / N"` en partida, vuelve al menú en Game Over y desde el menú principal sale con fundido e imprime `"Gracias por jugar!"` en modo texto DOS; `/L` activa `SHOOTER.LOG`. |
+| `SHOOTER.EXE` | `shooter.c` | Shooter arcade independiente a pantalla completa (320×200) basado en `showcase.c`. Muestra `SHOWCASE/UFO.BMP` durante 5 s al inicio (**Esc** salta directamente al menú) y empieza la partida con 1 UFO en uno de 4 patrones identificados por color; cada baja genera 2 UFO nuevos (hasta 256 simultáneos) hasta chocar con la nave. **Flechas/WASD** o joystick mueven, **Space**/botón 1 inicia/dispara, **P** pausa, **T** edita el nombre, **M**/**-/+** ajustan el audio, **F2/F3** guardan/cargan y **Esc** pide confirmación `"EXIT? Y / N"` en partida, vuelve al menú en Game Over y desde el menú principal sale con fundido e imprime `"¡Gracias por jugar!"` en modo texto DOS; `/L` activa `SHOOTER.LOG`. |
 | `DINO.EXE` | `dinorun.c` | El corredor intenta esquivar automáticamente; la agilidad aleatoria puede hacer que falle el momento. Coloca un cactus con **Q** o un pájaro con **P**. Los sprites se muestran por defecto a media escala (`/s 2`); `/h` muestra la ayuda. **Space** inicia/pausa y **Esc** sale. El Top 10 ordena primero los tiempos más cortos. |
 
 ## Capturas de pantalla
@@ -178,6 +182,10 @@ Para comparar `-O3`, usa otro directorio (por ejemplo, `build-dos-fast3`) y sust
 
 En una prueba reportada con un 486 DX2/50, `MODPLAY.EXE` funcionó holgadamente a 22050 Hz, 16 bits, estéreo. A 44100 Hz, 16 bits, estéreo, la prueba con `-O2` generó unos 44.150 frames/s y tuvo un tiempo máximo de rellenado de audio de 61 ms; con `-O3` generó unos 45.090 frames/s y el máximo fue de 57 ms. La cola objetivo es de unos 65 ms, por lo que a la tasa más alta queda poco margen. Son mediciones de hardware concreto, no garantías de rendimiento.
 
+### Edición independiente para 80386 / 386SX con poca memoria
+
+Este repositorio mantiene sus fuentes C limpios, legibles y libres de parches dependientes del hardware (orientados a equipos DOS 486 o superiores y sistemas actuales). En el directorio paralelo `../sdl3-dos-386` se ofrece una edición independiente específica para `80386` / `386SX` sin FPU y con presupuesto estricto de 2 MB de RAM (binarios reducidos, sprites pre-escalados y capa de compatibilidad VGA/PIT).
+
 ## Ejecución en DOS o DOSBox
 
 DJGPP genera ejecutables DPMI de 32 bits. Proporciona un host DPMI compatible, como `CWSDPMI.EXE`, junto a los programas, salvo que el entorno de ejecución ya incluya uno. Monta el directorio de compilación elegido como unidad `C:` en DOSBox o DOSBox-X.
@@ -185,7 +193,19 @@ DJGPP genera ejecutables DPMI de 32 bits. Proporciona un host DPMI compatible, c
 ```text
 C:
 HELLO.EXE
+HELLO.EXE /L
+HELLO.EXE /H
 ```
+
+`HELLO.EXE` abre una pantalla VGA indexada de 320×200, dibuja su patrón de prueba y espera hasta 5 segundos (o sale al instante al pulsar **Esc**). El registro en `HELLO.LOG` está desactivado por defecto y solo se activa pasando `/L` (`/LOG`, `-l`, `--log`).
+
+### Muestra comparativa de fuentes bitmap
+
+```text
+FONTDEMO.EXE
+```
+
+`FONTDEMO.EXE` compara simultáneamente en 320×200 las cuatro fuentes bitmap en cabeceras C del proyecto (`font_3x5.h`, `font_5x7.h`, `nueva_font_5x7.h` y `font_8x8.h`), generadas desde tiras PNG con `tools/genfont.py`. Pulsa **Esc** para volver limpiamente al símbolo del sistema de MS-DOS.
 
 ### Plantilla Systems Showcase
 
@@ -276,6 +296,8 @@ El código y la documentación propios del proyecto se distribuyen bajo MIT; con
 
 ## Referencias
 
+- [Edición SDL3 DOS 386 (`mmoroca/sdl3-dos-386`) — Repositorio hermano optimizado para `80386` / `386SX` real (`2 MB` de RAM, sin FPU)](https://github.com/mmoroca/sdl3-dos-386)
+- [Corrección upstream de `CPU_haveCPUID()` en `i386` (`libsdl-org/SDL#16573`)](https://github.com/libsdl-org/SDL/pull/16573)
 - [SDL3: instrucciones del backend DOS](https://wiki.libsdl.org/SDL3/README-dos)
 - [SDL3: configuración con CMake](https://wiki.libsdl.org/SDL3/README-cmake)
 - [Licencia de SDL](https://www.libsdl.org/license.php)

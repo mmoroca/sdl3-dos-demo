@@ -4,18 +4,22 @@
 
 **by @mmoroca & [Arena.AI](http://arena.ai/) 2026**
 
+> [!TIP]
+> **Running on a real `80386` / `386SX` / `486SX` with only `2 MB` of RAM or no FPU?** Check out the companion repository **[`mmoroca/sdl3-dos-386`](https://github.com/mmoroca/sdl3-dos-386)** — validated on a real **ADL Computers Terminator 386 (`80386SX`, `2 MB` RAM, no `80387`)** with **zero `CWSDPMI.SWP` disk swap**, stripped `~508–574 KB` `.EXE` binaries, a drop-in `dos_compat.c` layer, `CONFIG.SYS` / `AUTOEXEC.BAT` tuning tips, and a complete 386 optimization engineering guide.
+
 A set of small C programs for MS-DOS, built with DJGPP and the SDL3 DOS backend. SDL3 is referenced as a Git submodule pinned to an upstream commit; its source remains in the SDL project and is not copied into this repository.
 
 ## Included programs
 
 | Executable | Source | Description and controls |
 |---|---|---|
-| `HELLO.EXE` | `main.c` | Minimal SDL surface example at 320×200. Draws a colored rectangle and exits on **Esc** or window close. Writes `HELLO.LOG` in the current directory when writable. |
+| `HELLO.EXE` | `main.c` | Minimal SDL surface example at 320×200. Draws a colored rectangle and exits on **Esc** or window close; `/L` enables optional `HELLO.LOG` output. |
+| `FONTDEMO.EXE` | `fontdemo.c` | Side-by-side 320×200 showcase of the four C-header bitmap fonts (`font_3x5.h`, `font_5x7.h`, `nueva_font_5x7.h`, `font_8x8.h`). **Esc** exits. |
 | `MISTIFY.EXE` | `mistify.c` | Animated quadrilaterals with a 256-color palette and fading trails. Defaults: 48 trail frames, 2 polygons, normal speed. Any key or mouse movement exits. `/L` enables `MISTIFY.LOG`. |
 | `SBTEST.EXE` | `soundtest.c` | Plays an original generated melody as 11025 Hz, unsigned 8-bit mono PCM and shows audio/device diagnostics. **Esc** exits; `/L` enables `SBTEST.LOG`. |
 | `MODPLAY.EXE` | `modplay.c` | Plays bounded ProTracker modules (31 samples, 4 channels). Default output: 22050 Hz, 8-bit, mono. **Space** pauses/resumes and **Esc** exits. |
 | `SHOWCASE.EXE` | `showcase.c` | Function-oriented SDL3 starter: 320×200 indexed display, palette fade, text/keyboard input, optional eight-way joystick, audio diagnostics and PCM effects, saved settings/high score, and a four-panel mini-shooter. **Arrows/WASD** move, **Space** fires, **T** edits the call sign, **F1** fades, **M** toggles music, **F2/F3** save/load settings, **-/+** adjusts volume, **Esc** exits; `/L` enables `SHOWCASE.LOG`. |
-| `SHOOTER.EXE` | `shooter.c` | Standalone full-screen 320×200 arcade shooter built on `showcase.c`. Shows `SHOWCASE/UFO.BMP` for 5 seconds at startup (**Esc** skips straight to the menu), then starts runs with 1 descending UFO on one of 4 color-coded patterns; each hit spawns 2 new UFOs (up to 256 active) until an enemy collides with the ship. **Arrows/WASD** or joystick move, **Space**/button 1 launches/fires, **P** pauses, **T** edits pilot name, **M**/**-/+** control audio, **F2/F3** save/load, **Esc** asks `"EXIT? Y / N"` during play, returns to the menu on Game Over, and from the main menu fades out to DOS text mode printing `"Gracias por jugar!"`; `/L` enables `SHOOTER.LOG`. |
+| `SHOOTER.EXE` | `shooter.c` | Standalone full-screen 320×200 arcade shooter built on `showcase.c`. Shows `SHOWCASE/UFO.BMP` for 5 seconds at startup (**Esc** skips straight to the menu), then starts runs with 1 descending UFO on one of 4 color-coded patterns; each hit spawns 2 new UFOs (up to 256 active) until an enemy collides with the ship. **Arrows/WASD** or joystick move, **Space**/button 1 launches/fires, **P** pauses, **T** edits pilot name, **M**/**-/+** control audio, **F2/F3** save/load, **Esc** asks `"EXIT? Y / N"` during play, returns to the menu on Game Over, and from the main menu fades out to DOS text mode printing `"¡Gracias por jugar!"`; `/L` enables `SHOOTER.LOG`. |
 | `DINO.EXE` | `dinorun.c` | The runner attempts to dodge automatically; random agility can make its timing imprecise. Place a cactus with **Q** or a bird with **P**. Sprites default to half size (`/s 2`); `/h` shows help. **Space** starts/pauses and **Esc** exits. The Top 10 ranks shorter times first. |
 
 ## Screenshots
@@ -178,6 +182,10 @@ To compare `-O3`, use another build directory (for example, `build-dos-fast3`) a
 
 A reported 486 DX2/50 test ran `MODPLAY.EXE` comfortably at 22050 Hz, 16-bit stereo. At 44100 Hz, 16-bit stereo, the reported `-O2` run generated about 44,150 frames/s with a 61 ms maximum audio-fill time; `-O3` generated about 45,090 frames/s with a 57 ms maximum. The target queue is about 65 ms, so the higher rate still has little headroom. These are hardware-specific measurements, not performance guarantees.
 
+### Separate 80386 / 386SX low-memory edition
+
+This repository keeps its C sources clean, readable, and free of hardware-specific workarounds (targeting 486-class or newer DOS machines and modern hosts). A companion project directory (`../sdl3-dos-386`) provides a dedicated 80386 / 386SX edition (no FPU, 2 MB RAM budget, stripped binaries, pre-baked sprite spans, and VGA/PIT compatibility shims).
+
 ## Running in DOS or DOSBox
 
 DJGPP creates 32-bit DPMI executables. Provide a compatible DPMI host, such as `CWSDPMI.EXE`, alongside the programs unless the runtime environment supplies one. Mount the selected build directory as drive `C:` in DOSBox or DOSBox-X.
@@ -185,7 +193,19 @@ DJGPP creates 32-bit DPMI executables. Provide a compatible DPMI host, such as `
 ```text
 C:
 HELLO.EXE
+HELLO.EXE /L
+HELLO.EXE /H
 ```
+
+`HELLO.EXE` opens a 320×200 indexed VGA display, draws its test pattern, and waits up to 5 seconds (or exits immediately on **Esc**). Logging to `HELLO.LOG` is off by default and enabled only when `/L` (`/LOG`, `-l`, `--log`) is supplied.
+
+### Bitmap font showcase
+
+```text
+FONTDEMO.EXE
+```
+
+`FONTDEMO.EXE` renders the project's four C-header bitmap fonts side by side on a 320×200 indexed display (`font_3x5.h`, `font_5x7.h`, `nueva_font_5x7.h`, and `font_8x8.h`), generated from PNG glyph strips with `tools/genfont.py`. Press **Esc** to return cleanly to MS-DOS.
 
 ### Systems Showcase template
 
@@ -276,6 +296,8 @@ The project-authored code and documentation are licensed under MIT; see [`LICENS
 
 ## References
 
+- [SDL3 DOS 386 Edition (`mmoroca/sdl3-dos-386`) — Real `80386` / `386SX` (`2 MB` RAM, No-FPU) optimized sister repository](https://github.com/mmoroca/sdl3-dos-386)
+- [Upstream `i386` `CPU_haveCPUID()` fix (`libsdl-org/SDL#16573`)](https://github.com/libsdl-org/SDL/pull/16573)
 - [SDL3 DOS README](https://wiki.libsdl.org/SDL3/README-dos)
 - [SDL3 CMake README](https://wiki.libsdl.org/SDL3/README-cmake)
 - [SDL licensing](https://www.libsdl.org/license.php)
