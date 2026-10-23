@@ -2385,7 +2385,7 @@ static void draw_title_overlay(const ShooterApp *app, Uint64 now)
     const bool blink = ((now / 350U) & 1U) != 0U;
 
     draw_overlay_box(app->canvas, 18, 22, 284, 146, COLOR_CYAN);
-    draw_centered_text(app->canvas, 30, "SDL3 ARCADE SHOOTER", COLOR_CYAN);
+    draw_centered_text(app->canvas, 30, "How long will you survive?", COLOR_CYAN);
     draw_centered_text(app->canvas, 41, "1 UFO START -> +2 ON EACH HIT!", COLOR_ORANGE);
 
     draw_text(app->canvas, 36, 54, "BLUE:WAVE", COLOR_CYAN);
@@ -2760,7 +2760,12 @@ int main(int argc, char **argv)
         log_file = NULL;
     }
     if (video_ready) {
-        puts("¡Gracias por jugar!");
+#if defined(SDL_PLATFORM_DOS) || defined(__DJGPP__) || defined(__MSDOS__)
+        /* CP437 / CP850 / CP858 code 0xAD (173) is inverted '!' in DOS. */
+        puts("\xAD" "Gracias por jugar!");
+#else
+        puts("\xC2\xA1" "Gracias por jugar!");
+#endif
         fflush(stdout);
     }
     return exit_status;
