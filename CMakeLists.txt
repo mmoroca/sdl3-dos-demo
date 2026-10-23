@@ -44,6 +44,10 @@ target_link_libraries(showcase PRIVATE SDL3::SDL3)
 add_executable(shooter shooter.c)
 target_link_libraries(shooter PRIVATE SDL3::SDL3)
 
+# Multi-font Spanish pangram showcase using fonts/font_3x5.h, 5x7.h, 8x8.h.
+add_executable(fontdemo fontdemo.c)
+target_link_libraries(fontdemo PRIVATE SDL3::SDL3)
+
 # Short DOS 8.3 executable name for the obstacle-placement game.
 add_executable(dino dinorun.c)
 target_link_libraries(dino PRIVATE SDL3::SDL3)

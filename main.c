@@ -2,16 +2,19 @@
 #include <SDL3/SDL_main.h>
 
 #include <stdio.h>
+#include <string.h>
 
 /* by @mmoroca & Arena.AI 2026 (http://arena.ai/) */
 
 /*
  * Minimal SDL surface example: initialize a 320x200 window, set an indexed
  * palette when available, draw a fixed box, and quit on Esc or window close.
- * HELLO.LOG is always written in the current DOS directory when writable.
+ * Pass /L (or /LOG) to enable optional diagnostic logging to HELLO.LOG.
  */
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 200
+#define DOS_PIXEL_FORMAT_PROPERTY "SDL_PIXELFORMAT"
+#define LOG_FILE "HELLO.LOG"
 
 /* Holds the window and mapped colors so setup, drawing, and shutdown are separate. */
 typedef struct HelloApp {
@@ -31,6 +34,42 @@ static FILE *log_file;
         fflush(log_file); \
     } \
 } while (0)
+
+static void print_hello_usage(const char *program)
+{
+    const char *name = (program && program[0] != '\0') ? program : "HELLO.EXE";
+    printf("SDL3 DOS surface example (320x200)\n");
+    printf("Usage: %s [/h] [/l]\n", name);
+    printf("  /h, --help   Show this help\n");
+    printf("  /l, /log     Write diagnostics to %s (off by default)\n", LOG_FILE);
+}
+
+static bool parse_hello_arguments(int argc, char **argv, bool *enable_log,
+                                  bool *show_help)
+{
+    int i;
+
+    *enable_log = false;
+    *show_help = false;
+    for (i = 1; i < argc; ++i) {
+        const char *arg = argv[i];
+        if (SDL_strcasecmp(arg, "/h") == 0 ||
+            SDL_strcasecmp(arg, "-h") == 0 ||
+            SDL_strcasecmp(arg, "--help") == 0) {
+            *show_help = true;
+        } else if (SDL_strcasecmp(arg, "/l") == 0 ||
+                   SDL_strcasecmp(arg, "/log") == 0 ||
+                   SDL_strcasecmp(arg, "-l") == 0 ||
+                   SDL_strcasecmp(arg, "--log") == 0) {
+            *enable_log = true;
+        } else {
+            fprintf(stderr, "HELLO: unknown option: %s\n", arg);
+            print_hello_usage((argc > 0) ? argv[0] : NULL);
+            return false;
+        }
+    }
+    return true;
+}
 
 /* -------------------------------------------------------------------------- */
 /* Display initialization: palette, window surface, and mapped draw colors.   */
@@ -72,16 +111,32 @@ static bool set_vga_palette_if_needed(SDL_Surface *surface)
 
 static bool initialize_hello_display(HelloApp *app)
 {
+    SDL_PropertiesID props;
+
     LOG("Initializing SDL video");
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         LOG("SDL_Init failed: %s", SDL_GetError());
         return false;
     }
     app->sdl_initialized = true;
+    (void)SDL_HideCursor();
     LOG("SDL_Init OK; video driver=%s",
         SDL_GetCurrentVideoDriver() ? SDL_GetCurrentVideoDriver() : "(null)");
 
-    app->window = SDL_CreateWindow("SDL3 DOS demo", SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    props = SDL_CreateProperties();
+    if (!props) {
+        LOG("SDL_CreateProperties failed: %s", SDL_GetError());
+        return false;
+    }
+    if (!SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, "SDL3 DOS demo") ||
+        !SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, SCREEN_WIDTH) ||
+        !SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, SCREEN_HEIGHT) ||
+        !SDL_SetNumberProperty(props, DOS_PIXEL_FORMAT_PROPERTY, SDL_PIXELFORMAT_INDEX8)) {
+        SDL_DestroyProperties(props);
+        return false;
+    }
+    app->window = SDL_CreateWindowWithProperties(props);
+    SDL_DestroyProperties(props);
     if (!app->window) {
         LOG("SDL_CreateWindow failed: %s", SDL_GetError());
         return false;
@@ -181,13 +236,21 @@ int main(int argc, char **argv)
     HelloApp app = { 0 };
     unsigned long frames = 0;
     int exit_status = 1;
+    bool enable_log = false;
+    bool show_help = false;
     bool initialized;
 
-    (void)argc;
-    (void)argv;
+    if (!parse_hello_arguments(argc, argv, &enable_log, &show_help)) {
+        return 1;
+    }
+    if (show_help) {
+        print_hello_usage((argc > 0) ? argv[0] : NULL);
+        return 0;
+    }
 
-    /* Keep diagnostics in the current DOS directory after SDL restores text mode. */
-    log_file = fopen("HELLO.LOG", "w");
+    if (enable_log) {
+        log_file = fopen(LOG_FILE, "w");
+    }
     LOG("start");
 
     initialized = initialize_hello_display(&app);
