@@ -51,11 +51,7 @@ With the initialized upstream SDL3-DOS submodule and DJGPP toolchain, use the Re
 | `MISTIFY.EXE` | ![MISTIFY.EXE running in DOSBox-X](docs/mistify.png) |
 | `SBTEST.EXE` | ![SBTEST.EXE diagnostics in DOSBox-X](docs/sbtest.png) |
 | `MODPLAY.EXE` | ![MODPLAY.EXE playing a module in DOSBox-X](docs/modplay.png) |
-| TETRISDL3 title | ![Updated TITLE.png title after the splash in DOSBox-X](docs/tetris_title.png) |
-| TETRISDL3 menu | ![Illustrated menu in DOSBox-X](docs/tetris_menu.png) |
-| `TETSDL3.EXE` | ![Game board on the owner-created art in DOSBox-X](docs/tetrisdl3.png) |
-| TETRISDL3 Top 10 | ![Illustrated Top 10 page in DOSBox-X](docs/tetris_top10.png) |
-| TETRISDL3 exit question | ![PAUSED EXIT Y/N over gameplay in DOSBox-X](docs/tetris_exit.png) |
+| `TETSDL3.EXE` | ![Game board on the owner-created art in DOSBox-X](docs/tetsdl3.png) |
 | `DINO.EXE` | ![DINO.EXE running in DOSBox-X](docs/dino.png) |
 | `SHOWCASE.EXE` | ![SHOWCASE.EXE running in DOSBox-X](docs/showcase.png) |
 | `SHOOTER.EXE` | ![SHOOTER.EXE running in DOSBox-X](docs/shooter.png) |
