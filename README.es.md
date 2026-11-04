@@ -51,11 +51,7 @@ Con SDL3-DOS upstream/submódulo y DJGPP, sigue los pasos Release siguientes y e
 | `MISTIFY.EXE` | ![MISTIFY.EXE ejecutándose en DOSBox-X](docs/mistify.png) |
 | `SBTEST.EXE` | ![Diagnóstico de SBTEST.EXE en DOSBox-X](docs/sbtest.png) |
 | `MODPLAY.EXE` | ![MODPLAY.EXE reproduciendo un módulo en DOSBox-X](docs/modplay.png) |
-| Portada TETRISDL3 | ![Portada TITLE.png corregida tras el splash en DOSBox-X](docs/tetris_title.png) |
-| Menú TETRISDL3 | ![Menú ilustrado en DOSBox-X](docs/tetris_menu.png) |
-| `TETSDL3.EXE` | ![Tablero de juego con fondo original en DOSBox-X](docs/tetrisdl3.png) |
-| Top 10 TETRISDL3 | ![Pantalla ilustrada de récords en DOSBox-X](docs/tetris_top10.png) |
-| TETRISDL3: confirmar salida | ![PAUSED EXIT Y/N sobre la partida en DOSBox-X](docs/tetris_exit.png) |
+| `TETSDL3.EXE` | ![Tablero de juego con fondo original en DOSBox-X](docs/tetsdl3.png) |
 | `DINO.EXE` | ![DINO.EXE ejecutándose en DOSBox-X](docs/dino.png) |
 | `SHOWCASE.EXE` | ![SHOWCASE.EXE ejecutándose en DOSBox-X](docs/showcase.png) |
 | `SHOOTER.EXE` | ![SHOOTER.EXE ejecutándose en DOSBox-X](docs/shooter.png) |
