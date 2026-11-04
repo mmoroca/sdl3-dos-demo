@@ -1,4 +1,4 @@
-# SDL3 source checkout is fetched separately; it is not part of this repository.
+# SDL3 is tracked as an upstream submodule pointer, not as project source files.
 /SDL/
 
 # CMake build trees used by the documented profiles.
@@ -21,11 +21,8 @@ build.ninja
 .ninja_log
 Testing/
 
-# Compiled DOS programs, DPMI swap files, and intermediate objects/libraries.
+# Compiled DOS programs and intermediate objects/libraries.
 *.exe
-*.EXE
-*.swp
-*.SWP
 *.o
 *.obj
 *.a
@@ -33,6 +30,10 @@ Testing/
 
 # Runtime records, logs, and host OS metadata.
 DINO.SCO
+TETSDL3.SCO
+TETSDL3.TMP
+TETSDL3.BAK
+SKYHOP.SCO
 SHOWCASE.CFG
 SHOWCASE.SCO
 SHOWCASE.LOG
