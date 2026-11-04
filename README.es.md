@@ -51,10 +51,12 @@ Con SDL3-DOS upstream/submódulo y DJGPP, sigue los pasos Release siguientes y e
 | `MISTIFY.EXE` | ![MISTIFY.EXE ejecutándose en DOSBox-X](docs/mistify.png) |
 | `SBTEST.EXE` | ![Diagnóstico de SBTEST.EXE en DOSBox-X](docs/sbtest.png) |
 | `MODPLAY.EXE` | ![MODPLAY.EXE reproduciendo un módulo en DOSBox-X](docs/modplay.png) |
-| `TETSDL3.EXE` | ![Tablero de juego con fondo original en DOSBox-X](docs/tetsdl3.png) |
 | `DINO.EXE` | ![DINO.EXE ejecutándose en DOSBox-X](docs/dino.png) |
 | `SHOWCASE.EXE` | ![SHOWCASE.EXE ejecutándose en DOSBox-X](docs/showcase.png) |
 | `SHOOTER.EXE` | ![SHOOTER.EXE ejecutándose en DOSBox-X](docs/shooter.png) |
+| `SKYHOP.EXE` | ![SKYHOP.EXE ejecutándose en DOSBox-X](docs/skyhop.png) |
+| `TETSDL3.EXE` | ![TETSDL3.EXE ejecutándose en DOSBox-X](docs/tetsdl3.png) |
+| `VTEST.EXE` | ![VTEST.EXE ejecutándose en DOSBox-X](docs/vteststr.png) |ç
 
 Las demos arcade solicitan superficies indexadas de 320×200 cuando están disponibles; **VTEST.EXE** prueba por separado los modos VGA/VBE anunciados hasta 1024×768 por BIOS y SDL3. Mistify dibuja con una paleta de 256 colores; Dino Fall usa una paleta compartida de grises y una clave de transparencia; Showcase y Shooter usan una paleta RGB 3:3:2 para sus BMP convertidos; SKYHOP usa una paleta propia de colores exactos e índice transparente 0. Estos programas usan superficies SDL por software; el backend DOS utiliza VGA/VESA y no necesita OpenGL ni aceleración de GPU. Los textos y la ayuda visibles dentro de los programas están en inglés.
 
